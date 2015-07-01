@@ -1,0 +1,965 @@
+//
+//  HSHomeViewController.m
+//  HelloHSK
+//
+//  Created by junfengyang on 14/12/19.
+//  Copyright (c) 2014年 yang. All rights reserved.
+//
+
+#import "HSHomeViewController.h"
+#import "KeyChainHelper.h"
+#import "UIBadgeView.h"
+#import "UIView+Toast.h"
+#import "HSMessageManager.h"
+#import "HSBaseTool.h"
+#import "MessageHelper.h"
+
+#import "HSCourseItemUnitTestCell.h"
+#import "HSCourseItemContinueCell.h"
+#import "HSCourseItemCourseCell.h"
+#import "UIPayHSMoneyViewController.h"
+#import "UICourseLevelViewController.h"
+
+#import "HSCheckPointViewController.h"
+#import "HSVipShopViewController.h"
+
+#import "CourseNet.h"
+#import "CourseDAL.h"
+#import "CourseModel.h"
+#import "CourseTransModel.h"
+#import "HSCourseHandle.h"
+#import "LessonModel.h"
+#import "LessonProgressModel.h"
+
+#define headerHeight 25
+#import "UserDAL.h"
+#import "UserLaterStatuModel.h"
+
+//测试
+#import "UICourseItemLessonVC.h"
+#import "UICourseItemFinalTestVC.h"
+#import "UICourseItemFinalTestReportVC.h"
+#import "UICourseItemKnowledgeVC.h"
+
+#import "MBProgressHUD.h"
+
+#import "HSContinueLearnHandle.h"
+#import "HSUIAnimateHelper.h"
+#import "CheckPointNet.h"
+#import "PracticeRecordStore.h"
+
+
+//排序算法
+NSInteger lessonArraySort(LessonModel *obj1, LessonModel *obj2, void *context)
+{
+    float price1 = [obj1.weight floatValue];
+    float price2 = [obj2.weight floatValue];
+    
+    if (price1 > price2) {
+        return (NSComparisonResult)NSOrderedDescending;
+    }else if (price1 < price2){
+        return (NSComparisonResult)NSOrderedAscending;
+    }
+    return (NSComparisonResult)NSOrderedSame; ;
+}
+
+
+
+@interface HSHomeViewController ()<UICourseLevelDelegate, HSCourseItemCourseCellDelegate, HSVipShopDelegate>
+{
+    NSInteger msgCount;
+    UIImage *imgMessage;
+    UIButton *btnMessage;
+}
+
+@property (nonatomic, strong) UIBadgeView *messageBadge;
+@property (nonatomic, strong) HSCourseItemContinueCell *continueCell;//继续学习cell
+
+@property (nonatomic, strong) CourseNet *courseNet;
+@property (nonatomic, strong) CheckPointNet *cpNet;
+
+@property (nonatomic, strong) UIButton *navItemTitleView; // 顶部按钮
+@property (nonatomic, strong) UILabel *lblTitle;
+@property (nonatomic, strong) UIButton *navItemButton;
+@property (nonatomic, strong) UIImageView *arrowImageView;//箭头
+
+@property (nonatomic, strong) NSTimer *timer;
+
+
+@end
+
+@implementation HSHomeViewController
+
+{
+    NSMutableArray *lessonListArray; // 课程数组
+    NSMutableArray * lessonListParentArray;
+    NSMutableDictionary *lessonListSonDic;
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+    }
+    return self;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    // FIXME:这个地方最好不要做耗时的操作
+    [self.continueCell editTextStatus];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [HSBaseTool googleAnalyticsPageView:NSStringFromClass([self class])];
+    
+    // 请求所有的课时进度
+    [self requestLessonOfCourseProgress];
+    
+    // 心跳包发送获取消息数量。
+    _timer = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(requestMessageCount) userInfo:nil repeats:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    [self requestMessageCount];
+    // 消息数量心跳停止。
+    [_timer invalidate];
+    _timer = nil;
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [self unLoadImage];
+    
+    [super viewDidDisappear:animated];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    self.view.backgroundColor = kColorEEBackground;
+    self.navigationItem.titleView = self.navItemTitleView;
+    CourseModel *model = [CourseDAL queryCourseWithCourseID:HSAppDelegate.curCID];
+    [self setNavigationItemTitle:model.tName];
+    CreatViewControllerImageBarButtonItem(ImageNamed(@"ico_navigation_shop"), @selector(pushToShopVC), self, NO);
+    
+    kAddObserverNotification(self, @selector(refereshMessageCount:), kRefreshMessageCountNotification, nil);
+    
+    lessonListArray = [NSMutableArray arrayWithCapacity:2];
+    lessonListParentArray = [NSMutableArray arrayWithCapacity:2];
+    lessonListSonDic = [NSMutableDictionary dictionaryWithCapacity:2];
+    
+    [self loadImage];
+    
+    btnMessage = [UIButton buttonWithType:UIButtonTypeCustom];
+    btnMessage.frame = CGRectMake(0, 0, imgMessage.size.width, imgMessage.size.height);
+    [btnMessage setImage:imgMessage forState:UIControlStateNormal];
+    [btnMessage addTarget:self action:@selector(showMessages:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnMessage];
+    [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
+    
+    [self.tbvItemList setBackgroundView:nil];
+    self.tbvItemList.backgroundColor = [UIColor clearColor];
+    self.tbvItemList.tableFooterView = [[UIView alloc] init];
+    self.tbvItemList.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    NSArray *arrLesson = [CourseDAL queryLessonListDataWithCourseID:HSAppDelegate.curCID];
+    NSInteger count = [arrLesson count];
+    if (count <= 0)
+    {
+        // 进入词书选择界面
+        //[self toCourseLevelView:nil];
+        [self requestCourseData];
+    }
+    else
+    {
+        // 先显示
+        [self loadLessonListTableWithData:arrLesson];
+        // 请求课时列表
+        [self requestLessonList];
+        // 请求所有的课时进度
+        [self requestLessonOfCourseProgress];
+    }
+    // 请求消息的数量
+    [self requestMessageCount];
+    
+    // 同步当前用户所有的做题记录
+    [self synchronousPracticeRecord];
+}
+
+//修改navItemButton的title
+- (void)setNavigationItemTitle:(NSString *)title
+{
+    self.lblTitle.text = title;
+    [self.lblTitle sizeToFit];
+    self.arrowImageView.left = self.lblTitle.right+2;
+    self.navItemTitleView.width = self.lblTitle.left+self.arrowImageView.right;
+}
+
+#pragma mark - 属性
+- (CourseNet *)courseNet
+{
+    if (!_courseNet)
+    {
+        _courseNet = [[CourseNet alloc] init];
+        
+    }
+    return _courseNet;
+}
+
+- (CheckPointNet *)cpNet
+{
+    if (!_cpNet) {
+        _cpNet = [[CheckPointNet alloc] init];
+    }
+    return _cpNet;
+}
+
+#pragma mark - 消息数量
+- (void)refereshMessageCount:(NSNotification *)notification
+{
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        NSInteger lMsgCount  = [HSMessageManager messageCount];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            msgCount = lMsgCount;
+            self.messageBadge.badgeString = [[NSString alloc] initWithFormat:@"%@", @(msgCount)];
+            [self requestMessageCount];
+        });
+    });
+}
+
+- (void)requestMessageCount
+{
+    // 未读消息的数量
+    __weak HSHomeViewController *weakSelf = self;
+    [HSMessageManager messageUnReadCountWithCompletion:^(BOOL finished, id obj, NSError *error) {
+        //DLog(@"数量: %@", obj);
+        msgCount = [obj integerValue];
+        [HSMessageManager setMessageCount:msgCount];
+        weakSelf.messageBadge.badgeString = [[NSString alloc] initWithFormat:@"%@", @(msgCount)];
+    }];
+}
+
+#pragma mark - 同步做题记录的数据
+- (void)synchronousPracticeRecord
+{
+    NSString *record = [PracticeRecordStore practiceRecordsWithUserID:kUserID];
+    [self.cpNet synchronousPracticeRecordWithUserID:kUserID record:record completion:^(BOOL finished, id data, NSError *error) {
+        DLog(@"data: %@; error: %@", data, error);
+    }];
+}
+
+#pragma mark - 课时数据
+- (void)requestLessonList
+{
+    __weak HSHomeViewController *weakSelf = self;
+    __block MBProgressHUD *hud;
+    NSInteger count = [lessonListParentArray count];
+    if (count <= 0)
+    {
+        hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.mode = MBProgressHUDModeIndeterminate;
+        hud.labelText = [[NSString alloc] initWithFormat:@"%@", MyLocal(@"加载")];
+    }
+    
+    [self.courseNet requestLessonListDataWithUserID:kUserID courseID:HSAppDelegate.curCID completion:^(BOOL finished, id obj, NSError *error) {
+        [hud hide:YES];
+
+        if (!finished)
+        {
+            NSString *errorDomain = error.domain;
+            if (![errorDomain isEqualToString:@"ASIHTTPRequestErrorDomain"])
+            {
+                [MessageHelper makeToastWithMessage:errorDomain view:weakSelf.view];
+            }
+            else
+            {
+                [MessageHelper makeToastWithMessage:MyLocal(@"网络不可用，请检查网络设置") view:weakSelf.view];
+            }
+        }
+        
+        [weakSelf queryLessonData];
+    }];
+}
+
+- (void)requestLessonOfCourseProgress
+{
+    __weak HSHomeViewController *weakSelf = self;
+    [self.courseNet requestLessonProgressWithUserID:kUserID courseID:HSAppDelegate.curCID lessonID:@"" records:@"" completion:^(BOOL finished, id obj, NSError *error) {
+        // 更新完进度之后重新刷新状态。
+        [weakSelf refreshVisibleLessonsProgress];
+    }];
+}
+
+-(void)queryLessonData
+{
+    NSArray *arrLesson = [CourseDAL queryLessonListDataWithCourseID:HSAppDelegate.curCID];
+    [self loadLessonListTableWithData:arrLesson];
+}
+
+- (void)loadLessonListTableWithData:(NSArray *)lessonList
+{
+    [lessonListArray setArray:lessonList];
+    
+    NSMutableArray *tempParentArray = [NSMutableArray arrayWithCapacity:2];
+    [lessonListArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        
+        LessonModel *lessonModel = obj;
+        if ([lessonModel.parentID isEqualToString:@"0"]) {
+            [tempParentArray addObject:lessonModel];
+        }
+    }];
+    
+    [lessonListArray removeObjectsInArray:tempParentArray];
+    
+    [lessonListParentArray setArray:[tempParentArray sortedArrayUsingFunction:lessonArraySort context:nil]];
+    
+    [lessonListParentArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        
+        LessonModel *parentModel = obj;
+        //DLog(@"parent: %@", parentModel);
+        NSMutableArray *tempSonArray = [[NSMutableArray alloc] init];
+        
+        [lessonListArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            LessonModel *courseModel = obj;
+            //DLog(@"course: %@", courseModel);
+            if ([courseModel.parentID isEqualToString: parentModel.lID]) {
+                [tempSonArray addObject:courseModel];
+            }
+        }];
+        
+        [lessonListSonDic setObject:[tempSonArray sortedArrayUsingFunction:lessonArraySort context:nil] forKey:parentModel.lID];
+    }];
+    
+    if ([lessonListParentArray count] > 0)
+    {
+        // 如果第一个课时未解锁，那么解锁第一个课时。
+        LessonModel *parentModel = [lessonListParentArray objectAtIndex:0];
+        NSArray *tempSonArray = [lessonListSonDic objectForKey:parentModel.lID];
+        if ([tempSonArray count] > 0)
+        {
+            LessonModel *lesson = [tempSonArray objectAtIndex:0];
+            LessonProgressModel *lProgress = [CourseDAL queryLessonProgressDataWithLessonID:lesson.lID userID:kUserID];
+            if (!lProgress)
+            {
+                [CourseDAL saveLessonProgressDataWithLessonID:lesson.lID userID:kUserID progress:0 status:LessonLearnedStatusUnLocked curStars:0 totalStars:0 completion:^(BOOL finished, id obj, NSError *error) {
+                    
+                }];
+            }
+        }
+    }
+    
+    [self.tbvItemList reloadData];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+}
+
+
+#pragma mark - 加载/卸载图片
+- (void)loadImage
+{
+    imgMessage = ImageNamed(@"ico_navigation_message");
+}
+
+- (void)unLoadImage
+{
+    imgMessage = nil;
+}
+
+
+#pragma mark - 按钮响应事件
+- (void)showMessages:(id)sender
+{
+    [HSMessageManager showMessageInterfaceWithParent:self];
+}
+
+-(void)pushToShopVC
+{
+    UIPayHSMoneyViewController *hsMoneyViewCon = [[UIPayHSMoneyViewController alloc] init];
+    hsMoneyViewCon.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:hsMoneyViewCon animated:YES];
+}
+
+-(void)toCourseLevelView:(id)sender
+{
+    UICourseLevelViewController *courseLevelViewController = [[UICourseLevelViewController alloc] init];
+    courseLevelViewController.delegate = self;
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:courseLevelViewController];
+    [self presentViewController:nav animated:YES completion:nil];
+}
+
+-(void)choseOneCourseWithCourseCID:(NSString *)courseCID courseName:(NSString *)name
+{
+    [self setNavigationItemTitle:name];
+    
+    __weak HSHomeViewController *weakSelf = self;
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+       
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf queryLessonData];
+            [weakSelf requestLessonList];
+            [weakSelf requestLessonOfCourseProgress];
+        });
+    });
+}
+
+- (void)requestCourseData
+{
+    __block MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.mode = MBProgressHUDModeIndeterminate;
+    hud.labelText = [[NSString alloc] initWithFormat:@"%@", MyLocal(@"加载")];
+    __weak HSHomeViewController *weakSelf = self;
+    [self.courseNet requestCourseListDataWithUserID:kUserID Completion:^(BOOL finished, id result, NSError *error) {
+        [hud hide:YES];
+        
+        if (!finished)
+        {
+            NSString *errorDomain = error.domain;
+            if (![errorDomain isEqualToString:@"ASIHTTPRequestErrorDomain"])
+            {
+                [MessageHelper makeToastWithMessage:errorDomain view:weakSelf.view];
+            }
+            else
+            {
+                [MessageHelper makeToastWithMessage:MyLocal(@"网络不可用，请检查网络设置") view:weakSelf.view];
+            }
+        }
+        
+        [weakSelf queryCourseListData];
+        
+    }];
+}
+
+- (void)queryCourseListData
+{
+    NSArray *arrCourse = [CourseDAL queryCourseList];
+    if ([arrCourse count] > 2)
+    {
+        [self toCourseLevelView:nil];
+    }
+    else
+    {
+        for (CourseModel *courseModel in arrCourse)
+        {
+            if (![courseModel.parentID isEqualToString:@"0"])
+            {
+                // 找到第一个满足条件的course，并选中它。
+                NSString *courseCID = courseModel.cID;
+                NSString *ccID = courseModel.parentID;
+                // !!! 保存种类ID和课程ID
+                kSetUDCourseCategoryID(ccID);
+                HSAppDelegate.curCCID = [ccID copy];
+                HSAppDelegate.curCID = [courseCID copy];
+                NSString *name = [courseModel.tName copy];
+                [self choseOneCourseWithCourseCID:courseCID courseName:name];
+                break;
+            }
+        }
+    }
+}
+
+#pragma mark - UI 刷新管理
+
+- (UIBadgeView *)messageBadge
+{
+    if (!_messageBadge)
+    {
+        _messageBadge = [[UIBadgeView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 66.0f, 20.0)];
+        _messageBadge.shadowEnabled = NO;
+        _messageBadge.borderEnabled = NO;
+        _messageBadge.highlightEnabled = NO;
+        _messageBadge.userInteractionEnabled = NO;
+        [_messageBadge setBadgeColor:[UIColor redColor]];
+        [btnMessage addSubview:_messageBadge];
+        _messageBadge.center = CGPointMake(btnMessage.width+22, 0.0);
+    }
+    _messageBadge.alpha = msgCount > 0 ? 1 : 0;
+    return _messageBadge;
+}
+
+-(UIButton *)navItemTitleView
+{
+    if (!_navItemTitleView)
+    {
+        _navItemTitleView = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 180, 22)];
+        _navItemTitleView.backgroundColor = kColorClear;
+        
+        _lblTitle = [[UILabel alloc] initWithFrame:CGRectZero];
+        _lblTitle.backgroundColor = kColorClear;
+        _lblTitle.font = kFontHel(18);
+        _lblTitle.text = self.title;
+        _lblTitle.textColor = kColorMain;
+        _lblTitle.textAlignment = NSTextAlignmentCenter;
+        [_navItemTitleView addSubview:_lblTitle];
+        [_lblTitle sizeToFit];
+        _lblTitle.centerY = _navItemTitleView.height*0.5;
+        
+        [_navItemTitleView addSubview:self.arrowImageView];
+        
+        self.arrowImageView.centerY = _navItemTitleView.height*0.5;
+        self.arrowImageView.left = _lblTitle.right+2;
+        _navItemTitleView.width = _lblTitle.left+self.arrowImageView.right;
+        
+        [_navItemTitleView addTarget:self action:@selector(toCourseLevelView:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _navItemTitleView;
+}
+
+//箭头
+-(UIImageView *)arrowImageView{
+    if (!_arrowImageView) {
+        UIImage *image = [UIImage imageNamed:@"ico_arrow_down"];
+        _arrowImageView = [[UIImageView alloc] initWithImage:image];
+        _arrowImageView.size = image.size;
+    }
+    return _arrowImageView;
+}
+
+-(UITableView *)tbvItemList{
+    if (!_tbvItemList) {
+        CGFloat height = kiOS7_OR_LATER ? 0 : 44;
+        _tbvItemList = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+        _tbvItemList.height = self.view.height - height - 49;
+        _tbvItemList.showsVerticalScrollIndicator = NO;
+        _tbvItemList.delegate = self;
+        _tbvItemList.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, cellSpace)];
+        _tbvItemList.sectionFooterHeight = 0;
+        _tbvItemList.dataSource = self;
+
+        
+        [self.view addSubview:_tbvItemList];
+    }
+    return _tbvItemList;
+}
+
+//continuecell
+-(HSCourseItemContinueCell *)continueCell
+{
+    if (!_continueCell) {
+        _continueCell = [[HSCourseItemContinueCell alloc] initWithReuseIdentifier:@"continueCell"];
+        //_continueCell.selector = @selector(continueLearn);
+    }
+    return _continueCell;
+}
+
+-(void)continueLearn
+{
+    //DLog(@"继续学习");
+    BOOL hasRecord = [HSContinueLearnHandle hasContinueLearnRecords];
+    NSString *title;
+    if (hasRecord)
+    {
+        // 继续学习
+        UserLaterStatuModel *userLater = [UserDAL userLaterStatuWithUserID:kUserID courseCategoryID:kCourseCategoryID];
+        NSInteger index = [lessonListParentArray indexOfObject:userLater.unitID];
+        
+        NSArray *tempSonArray = [lessonListSonDic objectForKey:userLater.unitID];
+        NSInteger tempCount = [tempSonArray count];
+        LessonModel *lesson = [CourseDAL queryLessonDataWithCourseID:userLater.cID lessonID:userLater.lID];
+        title = lesson.tTitle;
+        HSAppDelegate.curUnitID = [userLater.unitID copy];
+        HSAppDelegate.curLID = [lesson.lID copy];
+        HSAppDelegate.curCpID = [userLater.cpID copy];
+        HSAppDelegate.nexCpID = [userLater.nexCpID copy];
+        
+        NSInteger tIndex = [tempSonArray indexOfObject:lesson];
+        if (tIndex >= tempCount-1)
+        {
+            // 本单元的最后一个课程，那么判断下一个单元是否存在，如果存在，那么获取下一个单元的第一课，如果不存在，
+            // 那么已经学习完成所有的课程。
+            NSInteger parentCount = [lessonListParentArray count];
+            if (index >= parentCount-1)
+            {
+                // 学习完所有的
+                HSAppDelegate.nexLID = [lesson.lID copy];
+            }
+            else
+            {
+                LessonModel *parent = [lessonListParentArray objectAtIndex:(index+1)];
+                NSArray *tempSonArray = [lessonListSonDic objectForKey:parent.lID];
+                if ([tempSonArray count] > 0)
+                {
+                    LessonModel *lesson = [tempSonArray objectAtIndex:0];
+                    HSAppDelegate.nexLID = [lesson.lID copy];
+                }
+            }
+        }
+        else
+        {
+            // 不是本单元最后一课，那么获取本单元的下一课。
+            LessonModel *lesson= [tempSonArray objectAtIndex:(tIndex+1)];
+            HSAppDelegate.nexLID = [lesson.lID copy];
+        }
+    }
+    else
+    {
+        // 开始学习
+        if ([lessonListParentArray count] > 0)
+        {
+            LessonModel *parentModel = [lessonListParentArray objectAtIndex:0];
+            NSArray *tempSonArray = [lessonListSonDic objectForKey:parentModel.lID];
+            if ([tempSonArray count] > 0)
+            {
+                LessonModel *sonModel = [tempSonArray objectAtIndex:0];
+                title = sonModel.tTitle;
+                HSAppDelegate.curUnitID = [parentModel.lID copy];
+                HSAppDelegate.curLID = [sonModel.lID copy];
+                if ([tempSonArray count] > 1)
+                {
+                    LessonModel *lesson = [tempSonArray objectAtIndex:1];
+                    HSAppDelegate.nexLID = [lesson.lID copy];
+                }
+            }
+        }
+    }
+    
+    HSCheckPointViewController *checkPointViewController = [[HSCheckPointViewController alloc] initWithNibName:nil bundle:nil];
+    checkPointViewController.hidesBottomBarWhenPushed = YES;
+    checkPointViewController.title = title;
+    [self.navigationController pushViewController:checkPointViewController animated:NO];
+    checkPointViewController.continueLearn = hasRecord;
+}
+
+#pragma mark - 刷新课时的进度
+- (void)refreshVisibleLessonsProgress
+{
+    NSArray *arrVLesson = [self.tbvItemList visibleCells];
+    for (HSCourseItemCourseCell *cell in arrVLesson)
+    {
+        if ([cell isKindOfClass:[HSCourseItemCourseCell class]])
+        {
+            [cell refreshLessonStatus];
+        }
+    }
+}
+
+#pragma mark - vip购买 delegate
+- (void)vipShop:(HSVipShopViewController *)vipShopController finishedBuy:(BOOL)flag
+{
+    //NSArray *visibleIndex = [self.tbvItemList indexPathsForVisibleRows];
+    //[self.tbvItemList reloadRowsAtIndexPaths:visibleIndex withRowAnimation:UITableViewRowAnimationFade];
+    [self.tbvItemList reloadData];
+}
+
+#pragma mark - UITableView DataSource
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return lessonListParentArray.count + 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    if (section == 0) {
+        return 1;
+    }else{
+        LessonModel *parentModel = [lessonListParentArray objectAtIndex:(section-1)];
+        NSArray *tempSonArray = [lessonListSonDic objectForKey:parentModel.lID];
+        return tempSonArray.count;
+    }
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    if (section == 0) {
+        return 0;
+    }
+    return headerHeight;
+}
+
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    
+    if (section == 0) {
+        return nil;
+    }
+    
+    
+    UIView *headBackView = [tableView headerViewForSection:section];
+    if (!headBackView) {
+        headBackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tbvItemList.width, headerHeight)];
+        headBackView.backgroundColor = kColorClear;
+        
+        UILabel *headLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.tbvItemList.width, headBackView.height - 5)];
+        headLabel.backgroundColor = kColorWhite;
+        headLabel.textColor = HEXCOLOR(0xFB5100);
+        headLabel.font = [UIFont systemFontOfSize:16.0f];
+        
+        LessonModel *lessonModel = [lessonListParentArray objectAtIndex:(section-1)];
+       
+        NSString *title = lessonModel.tTitle ? lessonModel.tTitle:@"";
+        headLabel.attributedText = [self resetContentWithText:title];
+        
+        [headBackView addSubview:headLabel];
+    }
+    return headBackView;
+}
+
+
+- (NSMutableAttributedString *)resetContentWithText:(NSString *)text{
+    
+    NSMutableParagraphStyle *paragraphStyle = [[ NSMutableParagraphStyle alloc ] init ];
+    paragraphStyle.firstLineHeadIndent = 15;
+    paragraphStyle.alignment = NSTextAlignmentJustified;
+    
+    NSMutableAttributedString *attributedString = [[ NSMutableAttributedString alloc ] initWithString:text attributes:@{NSParagraphStyleAttributeName: paragraphStyle}];
+    
+    return attributedString;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [self tableView:tableView configCellAtIndexPath:indexPath];
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    HSCourseItemBaseCell *cell = [self tableView:tableView configCellAtIndexPath:indexPath];
+    return cell.requiredRowHeight + cellSpace;
+}
+
+
+-(HSCourseItemBaseCell *)tableView:(UITableView *)tableView configCellAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == 0) {
+        return self.continueCell;
+    }
+    else
+    {
+        LessonModel *parentModel = [lessonListParentArray objectAtIndex:(indexPath.section-1)];
+        NSArray *tempSonArray = [lessonListSonDic objectForKey:parentModel.lID];
+        LessonModel *sonModel = [tempSonArray objectAtIndex:indexPath.row];
+    
+        //0代表课时
+        if ([sonModel.lessonType integerValue] == 0)
+        {
+            static NSString *cellIdentifier = @"courseCell";
+            HSCourseItemCourseCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+            if (!cell)
+            {
+                cell = [[HSCourseItemCourseCell alloc] initWithReuseIdentifier:cellIdentifier];
+                cell.delegate = self;
+            }
+            
+            cell.unitIndex = indexPath.section-1;
+            cell.lessonIndex = indexPath.row;
+            cell.lesson = sonModel;
+            
+            
+            
+            return cell;
+            
+        }
+        else if ([sonModel.lessonType integerValue] == 1)
+        {
+            static NSString *unitTestCellIdentifier = @"unitTestCellIdentifier";
+            HSCourseItemUnitTestCell *unitCell = [tableView dequeueReusableCellWithIdentifier:unitTestCellIdentifier];
+            if (!unitCell) {
+                unitCell = [[HSCourseItemUnitTestCell alloc] initWithReuseIdentifier:unitTestCellIdentifier];
+                unitCell.backgroundColor = kColorClear;
+            }
+            return unitCell;
+        }else{
+            return nil;
+        }
+    }
+}
+
+#pragma mark - UITableView Delegate
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+
+    if (indexPath.section > 0)
+    {
+        LessonModel *parentModel = [lessonListParentArray objectAtIndex:(indexPath.section-1)];
+        NSArray *tempSonArray = [lessonListSonDic objectForKey:parentModel.lID];
+        LessonModel *sonModel = [tempSonArray objectAtIndex:indexPath.row];
+        HSAppDelegate.curUnitID = parentModel.lID;
+        if ([sonModel.lessonType integerValue] == 0)
+        {
+            HSAppDelegate.curLID = sonModel.lID;
+            HSCourseItemCourseCell *tempCell = (HSCourseItemCourseCell *)[tableView cellForRowAtIndexPath:indexPath];
+            
+            //判断有无解锁
+            if (tempCell.courseItemStatusType == HSCourseItemStatusTypeLock)
+            {
+                if ([UserDAL userVipRoleEnable])
+                {
+                    [HSUIAnimateHelper popUpAnimationWithView:tempCell];
+                }
+                else
+                {
+                    // 如果vip不可用，那么弹出购买vip的界面。
+                    HSVipShopViewController *shopVC = [[HSVipShopViewController alloc] init];
+                    shopVC.delegate = self;
+                    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:shopVC];
+                    [self presentViewController:nav animated:YES completion:^{}];
+                }
+                
+                return;
+            }
+            else if (tempCell.courseItemStatusType == HSCourseItemStatusTypeNotStart)
+            {
+                if (!(indexPath.section-1 <= 0 && indexPath.row <= 0))
+                {
+                    if (![UserDAL userVipRoleEnable])
+                    {
+                        // 如果vip不可用，那么弹出购买vip的界面。
+                        HSVipShopViewController *shopVC = [[HSVipShopViewController alloc] init];
+                        shopVC.delegate = self;
+                        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:shopVC];
+                        [self presentViewController:nav animated:YES completion:^{}];
+                        
+                        return;
+                    }
+                }
+            }
+            
+            // 取得下一课的ID
+            if (indexPath.row >= [tempSonArray count]-1)
+            {
+                // 当前是该单元的最后一课,
+                // -- 那么判断下一单元是否存在，
+                // -- 如果存在，那么取得下一单与的第一课的ID。
+                // -- 如果不存在，那么下一课的ID与本身的ID相同。
+                if (indexPath.section-1 >= [lessonListParentArray count]-1)
+                {
+                    HSAppDelegate.nexLID = sonModel.lID;
+                }
+                else
+                {
+                    LessonModel *parentModel = [lessonListParentArray objectAtIndex:(indexPath.section)];
+                    NSArray *tempSonArray = [lessonListSonDic objectForKey:parentModel.lID];
+                    if ([tempSonArray count] > 0)
+                    {
+                        LessonModel *lesson = [tempSonArray objectAtIndex:0];
+                        HSAppDelegate.nexLID = lesson.lID;
+                    }
+                }
+            }
+            else
+            {
+                // 当前不是该单元的最后一课。
+                // -- 那么取得该单元的下一课的ID
+                LessonModel *lesson = [tempSonArray objectAtIndex:indexPath.row+1];
+                HSAppDelegate.nexLID = lesson.lID;
+            }
+            
+            // 进入关卡
+            HSCheckPointViewController *checkPointViewController = [[HSCheckPointViewController alloc] initWithNibName:nil bundle:nil];
+            checkPointViewController.hidesBottomBarWhenPushed = YES;
+            checkPointViewController.title = sonModel.tTitle;
+            [self.navigationController pushViewController:checkPointViewController animated:YES];
+            
+        }
+        else if ([sonModel.lessonType integerValue] == 1)
+        {
+            UICourseItemFinalTestVC *testVC = [[UICourseItemFinalTestVC alloc] init];
+            testVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:testVC animated:YES];
+        }
+    }
+    else
+    {
+        // section值为0时是继续学习。
+        [self continueLearn];
+    }
+}
+
+#pragma mark - HSCourseItemCourseCell 代理
+- (void)courseItem:(HSCourseItemCourseCell *)cell loadLesson:(NSString *)lessonID
+{
+    LessonProgressModel *lessonProgress = [CourseDAL queryLessonProgressDataWithLessonID:lessonID userID:kUserID];
+    
+    if (lessonProgress)
+    {
+        NSString *records = [[NSString alloc] initWithFormat:@"%@|%@|%@|%@|%@", lessonID, lessonProgress.status, lessonProgress.progress, lessonProgress.curStars, lessonProgress.allStars];
+        DLog(@"课时同步数据: %@", records);
+        [self.courseNet requestLessonProgressWithUserID:kUserID courseID:HSAppDelegate.curCID lessonID:lessonID records:records completion:^(BOOL finished, id obj, NSError *error) {
+            // 更新完进度之后重新刷新状态。
+            [cell loadLessonStatusWithLessonID:lessonID];
+        }];
+    }
+}
+
+- (void)courseItem:(HSCourseItemCourseCell *)cell nexLesson:(LessonModel *)lesson
+{
+    [self.navigationController popToViewController:self animated:NO];
+    
+    NSArray *tempSonArray = [lessonListSonDic objectForKey:lesson.parentID];
+    NSInteger lIndex = [tempSonArray indexOfObject:lesson];
+    __block NSUInteger uIndex = 0;
+    [lessonListParentArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        LessonModel *tLesson = (LessonModel *)obj;
+        if ([tLesson.lID isEqualToString:lesson.parentID])
+        {
+            uIndex = idx;
+            *stop = YES;
+        }
+    }];
+    
+    HSAppDelegate.curUnitID = lesson.parentID;
+    if ([lesson.lessonType integerValue] == 0)
+    {
+        HSAppDelegate.curLID = lesson.lID;
+        
+        // 取得下一课的ID
+        if (lIndex >= [tempSonArray count]-1)
+        {
+            if (uIndex >= [lessonListParentArray count]-1)
+            {
+                HSAppDelegate.nexLID = lesson.lID;
+            }
+            else
+            {
+                LessonModel *parentModel = [lessonListParentArray objectAtIndex:(uIndex+1)];
+                NSArray *tempSonArray = [lessonListSonDic objectForKey:parentModel.lID];
+                if ([tempSonArray count] > 0)
+                {
+                    LessonModel *lesson = [tempSonArray objectAtIndex:0];
+                    HSAppDelegate.nexLID = lesson.lID;
+                }
+            }
+        }
+        else
+        {
+            // 当前不是该单元的最后一课。
+            // -- 那么取得该单元的下一课的ID
+            LessonModel *lesson = [tempSonArray objectAtIndex:(lIndex+1)];
+            HSAppDelegate.nexLID = lesson.lID;
+        }
+        
+        // 进入关卡
+        HSCheckPointViewController *checkPointViewController = [[HSCheckPointViewController alloc] initWithNibName:nil bundle:nil];
+        checkPointViewController.hidesBottomBarWhenPushed = YES;
+        checkPointViewController.title = lesson.tTitle;
+        [self.navigationController pushViewController:checkPointViewController animated:NO];
+        
+    }
+}
+
+#pragma mark - Memory Manager
+- (void)dealloc
+{
+    kRemoveObserverNotification(self, kRefreshMessageCountNotification, nil);
+    [HSMessageManager clearnAndCancel];
+    [_tbvItemList removeFromSuperview];
+    _tbvItemList = nil;
+    
+    [_messageBadge removeFromSuperview];
+    _messageBadge = nil;
+}
+
+@end

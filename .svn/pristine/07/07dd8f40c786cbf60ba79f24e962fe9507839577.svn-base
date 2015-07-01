@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="HSCourseItemSentenceView">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YSY-0Z-nCc">
+                    <rect key="frame" x="0.0" y="300" width="600" height="1"/>
+                    <color key="backgroundColor" red="0.086274509799999996" green="0.63529411759999999" blue="0.88235294119999996" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="Oie-Wt-DXk"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="It's nice to meet you" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1nY-x2-Kat">
+                    <rect key="frame" x="8" y="378" width="584" height="150"/>
+                    <constraints>
+                        <constraint firstAttribute="height" relation="lessThanOrEqual" constant="164" id="kQU-8F-mzM"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="R1c-0Q-mSH" customClass="HSAudioPlayerButton">
+                    <rect key="frame" x="275" y="275" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="Dqc-HL-JtT"/>
+                        <constraint firstAttribute="height" constant="50" id="ylc-nq-40X"/>
+                    </constraints>
+                    <state key="normal">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ABw-cQ-rDo">
+                    <rect key="frame" x="0.0" y="556" width="600" height="44"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="normal" title="返回">
+                        <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="shouldBackAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="CjA-j5-XRm"/>
+                    </connections>
+                </button>
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ygN-ah-KMI">
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="267"/>
+                </scrollView>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="1nY-x2-Kat" secondAttribute="trailing" constant="8" id="0MT-iU-OhN"/>
+                <constraint firstAttribute="trailing" secondItem="ygN-ah-KMI" secondAttribute="trailing" id="5z3-R9-r3s"/>
+                <constraint firstItem="ygN-ah-KMI" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="AJe-tn-ol8"/>
+                <constraint firstItem="R1c-0Q-mSH" firstAttribute="top" secondItem="ygN-ah-KMI" secondAttribute="bottom" constant="8" id="F7C-8c-7yr"/>
+                <constraint firstAttribute="trailing" secondItem="ABw-cQ-rDo" secondAttribute="trailing" id="L4C-ZM-Mof"/>
+                <constraint firstItem="1nY-x2-Kat" firstAttribute="top" relation="lessThanOrEqual" secondItem="R1c-0Q-mSH" secondAttribute="bottom" constant="63" id="LgC-If-2vT"/>
+                <constraint firstItem="1nY-x2-Kat" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="8" id="VbZ-AS-eVh"/>
+                <constraint firstItem="ABw-cQ-rDo" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="XN9-D4-7P0"/>
+                <constraint firstAttribute="bottom" secondItem="ABw-cQ-rDo" secondAttribute="bottom" id="XsD-ut-Fc0"/>
+                <constraint firstAttribute="centerX" secondItem="R1c-0Q-mSH" secondAttribute="centerX" id="Zgh-LS-BGa"/>
+                <constraint firstAttribute="centerY" secondItem="YSY-0Z-nCc" secondAttribute="centerY" id="aHJ-IQ-5Yz"/>
+                <constraint firstItem="ABw-cQ-rDo" firstAttribute="top" relation="greaterThanOrEqual" secondItem="1nY-x2-Kat" secondAttribute="bottom" constant="28" id="hpf-Ho-wyN"/>
+                <constraint firstItem="1nY-x2-Kat" firstAttribute="top" relation="greaterThanOrEqual" secondItem="R1c-0Q-mSH" secondAttribute="bottom" constant="10" id="joC-fT-oa2"/>
+                <constraint firstAttribute="centerX" secondItem="YSY-0Z-nCc" secondAttribute="centerX" id="p3E-1g-bZn"/>
+                <constraint firstAttribute="centerY" secondItem="R1c-0Q-mSH" secondAttribute="centerY" id="tn2-Xv-4Xa"/>
+                <constraint firstItem="ygN-ah-KMI" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="whh-2l-HII"/>
+                <constraint firstAttribute="trailing" secondItem="YSY-0Z-nCc" secondAttribute="trailing" id="xgg-Ix-SSp"/>
+                <constraint firstItem="YSY-0Z-nCc" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="ylg-VA-RQY"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <connections>
+                <outlet property="btnAudioPlayer" destination="R1c-0Q-mSH" id="k5h-0N-d4o"/>
+                <outlet property="btnBack" destination="ABw-cQ-rDo" id="mua-Up-KCJ"/>
+                <outlet property="lblSeparator" destination="YSY-0Z-nCc" id="2Qe-Ok-N6w"/>
+                <outlet property="lblTranslation" destination="1nY-x2-Kat" id="7R7-Xb-l7E"/>
+                <outlet property="scrollView" destination="ygN-ah-KMI" id="gXb-Ct-aic"/>
+            </connections>
+            <point key="canvasLocation" x="-584" y="32"/>
+        </view>
+    </objects>
+</document>

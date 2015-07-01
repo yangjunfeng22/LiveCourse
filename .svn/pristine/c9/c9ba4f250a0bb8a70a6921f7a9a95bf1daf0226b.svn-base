@@ -1,0 +1,267 @@
+//
+//  HttpClient.m
+//  PinyinGame
+//
+//  Created by yang on 13-11-16.
+//  Copyright (c) 2013年 yang. All rights reserved.
+//
+
+#import "HttpClient.h"
+#import "ASINetworkQueue.h"
+
+#define requestIdentifier @"Identifier"
+
+@interface HttpClient ()
+{
+    BOOL _isFinished;
+    
+    ASIFormDataRequest *currentRequest;
+}
+
+@property (nonatomic, strong) ASINetworkQueue *networdQueue;
+
+- (void)requestFromURL:(NSString *)url params:(NSString *)params method:(NSString *)method completion:(void (^)(BOOL finished, NSData *responseData, NSString *responseString, NSError *error))completion;
+
+@end
+
+@implementation HttpClient
+
+@synthesize isRequestCanceled = _isRequestCanceled;
+
+#pragma mark - Block
+- (void)getRequestFromURL:(NSString *)url params:(NSString *)params completion:(void (^)(BOOL, NSData *, NSString *, NSError *))completion
+{
+    [self requestFromURL:url params:params method:@"GET" completion:completion];
+}
+
+- (void)postRequestFromURL:(NSString *)url params:(NSString *)params completion:(void (^)(BOOL, NSData *, NSString *, NSError *))completion
+{
+    [self requestFromURL:url params:params method:@"POST" completion:completion];
+}
+
+- (void)requestFromURL:(NSString *)url params:(NSString *)params method:(NSString *)method completion:(void (^)(BOOL, NSData *, NSString *, NSError *))completion
+{
+//    [self dealDemonDataWithUrl:url completion:completion];
+//    return;
+    
+    url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    //DLog(@"%@: 请求的url: %@; 数据: %@", NSStringFromSelector(_cmd), url, params);
+    ASIFormDataRequest *request = nil;
+    BOOL isGet = [method isEqualToString:@"GET"];
+    if (isGet)
+    {
+        // GET 请求的url为 url?params。
+        url = [[url stringByAppendingString:@"?"] stringByAppendingString:params];
+        request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    }
+    else
+    {
+        request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:url]];
+        NSArray *arrParams = [params componentsSeparatedByString:@"&"];
+        
+        for (NSString *strParam in arrParams)
+        {
+            NSArray *arrParam = [strParam componentsSeparatedByString:@"="];
+            NSString *key = [arrParam objectAtIndex:0];
+            NSString *value = [arrParam objectAtIndex:1];
+            
+            [request addPostValue:value forKey:key];
+        }
+    }
+    
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setTimeOutSeconds:30.0f];// 超时时间60秒
+    //[request setNumberOfTimesToRetryOnTimeout:3];//超时重传3次。
+    [request setShouldContinueWhenAppEntersBackground:YES];
+    [request setShouldAttemptPersistentConnection:NO];
+    [request setRequestMethod:method];
+    
+    __block ASIFormDataRequest *_requestCopy = request;
+    [request setCompletionBlock:^{
+        //DLog(@"response: %@", _requestCopy.responseString);
+        if (completion){
+            completion(YES, _requestCopy.responseData, _requestCopy.responseString, _requestCopy.error);
+        }
+    }];
+    
+    [request setFailedBlock:^{
+        //DLog(@"failed: %@; %@; %d", _requestCopy.responseStatusMessage, _requestCopy.responseString, _requestCopy.responseStatusCode);
+        if (completion){
+            NSError *error = [NSError errorWithDomain:_requestCopy.error.domain code:_requestCopy.error.code userInfo:nil];
+            completion(YES, _requestCopy.responseData, _requestCopy.responseString, error);
+        }
+    }];
+    
+    [self.networdQueue addOperation:request];//添加到队列，队列启动后不需重新启动
+    if (self.networdQueue.isSuspended) {
+        //DLog(@"suspend");
+        // 只需调用一次go函数
+        [self.networdQueue go];
+    }
+}
+
+- (ASINetworkQueue *)networdQueue
+{
+    if (!_networdQueue)
+    {
+        _networdQueue = [[ASINetworkQueue alloc] init];
+        [_networdQueue reset];
+        //下载队列代理方法
+        [_networdQueue setQueueDidFinishSelector:@selector(requestsFinished:)];
+        [_networdQueue setDelegate:self];
+        [_networdQueue setShouldCancelAllRequestsOnFailure:NO];
+        [_networdQueue setMaxConcurrentOperationCount:1];
+    }
+    return _networdQueue;
+}
+
+- (void)requestsFinished:(id)obj
+{
+    
+}
+
+- (void)cancelAllRequest
+{
+    [self.networdQueue reset];
+    _networdQueue = nil;
+}
+
+- (BOOL)isRequestAllCanceled
+{
+    return ([self.networdQueue operationCount] <= 0);
+}
+
+#pragma mark - 加标志的网络请求
+- (void)getRequestFromURL:(NSString *)url identifier:(NSString *)identifier completion:(void (^)(BOOL, NSData *, NSString *, NSError *))completion
+{
+    [self requestFromURL:url method:@"GET" identifier:identifier completion:completion];
+}
+
+- (void)postRequestFromURL:(NSString *)url identifier:(NSString *)identifier completion:(void (^)(BOOL, NSData *, NSString *, NSError *))completion
+{
+    [self requestFromURL:url method:@"POST" identifier:identifier completion:completion];
+}
+
+- (void)requestFromURL:(NSString *)url method:(NSString *)method identifier:(NSString *)identifier completion:(void (^)(BOOL, NSData *, NSString *, NSError *))completion
+{
+    //    [self dealDemonDataWithUrl:url completion:completion];
+    //    return;
+    
+    url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    //DLog(@"%@: 请求的url: %@; 数据: %@", NSStringFromSelector(_cmd), url, params);
+    ASIFormDataRequest *request = nil;
+    BOOL isGet = [method isEqualToString:@"GET"];
+    if (isGet)
+    {
+        // GET 请求的url为 url?params。
+        request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    }
+    else
+    {
+        NSArray *urlist = [url componentsSeparatedByString:@"?"];
+        NSString *params = @"";
+        NSString *rUrl = @"";
+        if([urlist count]>1)
+        {
+            rUrl = [urlist objectAtIndex:0];
+            params = [urlist objectAtIndex:1];
+        }
+        
+        request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:rUrl]];
+        
+        // 方式一: 直接发送post的body。
+        //NSMutableData *postData = [NSMutableData dataWithData:[params dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+        //[request setPostBody:postData];
+        
+        // 方式二: 构建post的value-key进行请求。
+        NSArray *arrParams = [params componentsSeparatedByString:@"&"];
+        
+        for (NSString *strParam in arrParams)
+        {
+            NSArray *arrParam = [strParam componentsSeparatedByString:@"="];
+            if ([arrParam count] > 1)
+            {
+                NSString *key = [arrParam objectAtIndex:0];
+                NSString *value = [arrParam objectAtIndex:1];
+                
+                [request addPostValue:value forKey:key];
+            }
+        }
+    }
+    // 每一个请求的标识。
+    NSDictionary *dicUserInfo = @{requestIdentifier:identifier};
+    
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setTimeOutSeconds:30.0f];// 超时时间60秒
+    //[request setNumberOfTimesToRetryOnTimeout:3];//超时重传3次。
+    [request setShouldContinueWhenAppEntersBackground:YES];
+    [request setShouldAttemptPersistentConnection:NO];
+    [request setRequestMethod:method];
+    request.userInfo = dicUserInfo;
+    
+    __block ASIFormDataRequest *_requestCopy = request;
+    [request setCompletionBlock:^{
+        //DLog(@"response: %@", _requestCopy.responseString);
+        if (completion){
+            completion(YES, _requestCopy.responseData, _requestCopy.responseString, _requestCopy.error);
+        }
+    }];
+    
+    [request setFailedBlock:^{
+        //DLog(@"failed: %@; %@; %d", _requestCopy.responseStatusMessage, _requestCopy.responseString, _requestCopy.responseStatusCode);
+        if (completion){
+            NSError *error = [NSError errorWithDomain:_requestCopy.error.domain code:_requestCopy.error.code userInfo:nil];
+            completion(YES, _requestCopy.responseData, _requestCopy.responseString, error);
+        }
+    }];
+    
+    [self.networdQueue addOperation:request];//添加到队列，队列启动后不需重新启动
+    if (self.networdQueue.isSuspended) {
+        //DLog(@"suspend");
+        // 只需调用一次go函数
+        [self.networdQueue go];
+    }
+}
+
+- (void)cancelRequestWithIdentifier:(NSString *)identifier
+{
+    // 取消特定的请求。
+    for (ASIHTTPRequest *request in self.networdQueue.operations)
+    {
+        if ([[request.userInfo objectForKey:requestIdentifier] isEqualToString:identifier])
+        {
+            [request clearDelegatesAndCancel];
+            break;
+        }
+    }
+}
+
+#pragma mark - DemonData Manager
+- (void)dealDemonDataWithUrl:(NSString *)url completion:(void (^)(BOOL, NSData *, NSString *, NSError *))completion
+{
+    NSRange range = [url rangeOfString:kHostUrl];
+    NSString *strApi = [url substringFromIndex:range.length];
+    DLog(@"api: %@", strApi);
+    
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"APIDemonData" ofType:@"txt"];
+    //BOOL exit = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
+    NSDictionary *dic = [NSDictionary dictionaryWithContentsOfFile:filePath];
+    //DLog(@"dic: %@; exit: %d", dic, exit);
+    NSString *responseString = [[dic objectForKey:strApi] stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    //DLog(@"responseString: %@", responseString);
+    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+    if (completion){
+        completion(YES, responseData, responseString, nil);
+    }
+}
+
+#pragma mark - Memeory Manager
+- (void)dealloc
+{
+    [currentRequest clearDelegatesAndCancel];
+    currentRequest = nil;
+    self.error = nil;
+    [self cancelAllRequest];
+}
+
+@end

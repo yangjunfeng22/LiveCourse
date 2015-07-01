@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7549" systemVersion="14D136" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="CheckPoint2ContentModel" representedClassName="CheckPoint2ContentModel" syncable="YES">
+        <attribute name="checkPointType" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="coID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="cpID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="gID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="weight" optional="YES" attributeType="Float" defaultValueString="0" syncable="YES"/>
+    </entity>
+    <entity name="CheckPointModel" representedClassName="CheckPointModel" syncable="YES">
+        <attribute name="address" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="checkPointType" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="cpID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="index" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="lID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="version" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="CheckPointProgressModel" representedClassName="CheckPointProgressModel" syncable="YES">
+        <attribute name="cpID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="progress" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="uID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="CheckPointTransModel" representedClassName="CheckPointTransModel" syncable="YES">
+        <attribute name="cpID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="language" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="CommunityAudioModel" representedClassName="CommunityAudioModel" syncable="YES">
+        <attribute name="audioData" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="audioUrl" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="createTime" optional="YES" attributeType="Date" syncable="YES"/>
+    </entity>
+    <entity name="CommunityModel" representedClassName="CommunityModel" syncable="YES">
+        <attribute name="audio" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="boardID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="duration" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="liked" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="owner" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="picture" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="posted" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="replied" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="summary" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tag" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tagName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="topicID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="CommunityPlateModel" representedClassName="CommunityPlateModel" syncable="YES">
+        <attribute name="boardID" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="icon" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="quantity" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="weight" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+    </entity>
+    <entity name="CourseModel" representedClassName="CourseModel" syncable="YES">
+        <attribute name="cID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="parentID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="picture" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="version" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="weight" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+    </entity>
+    <entity name="CourseTransModel" representedClassName="CourseTransModel" syncable="YES">
+        <attribute name="cID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="language" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="ExamModel" representedClassName="ExamModel" syncable="YES">
+        <attribute name="answer" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="audio" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="category" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="eID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="explain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="image" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="items" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="level" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="parentID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="question" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="subject" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="subjectFormat" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="time" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="total" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="typeAlias" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="weight" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+    </entity>
+    <entity name="ExamTransModel" representedClassName="ExamTransModel" syncable="YES">
+        <attribute name="eID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="explain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="language" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="typeAlias" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="FailOrderModel" representedClassName="FailOrderModel" syncable="YES">
+        <attribute name="createDate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="currency" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="orderID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="price" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="showPrice" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="Grammar2SentenceModel" representedClassName="Grammar2SentenceModel" syncable="YES">
+        <attribute name="gID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="GrammarModel" representedClassName="GrammarModel" syncable="YES">
+        <attribute name="explain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="gID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="GrammarTransModel" representedClassName="GrammarTransModel" syncable="YES">
+        <attribute name="explain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="gID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="language" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="Knowledge2GrammarModel" representedClassName="Knowledge2GrammarModel" syncable="YES">
+        <attribute name="gID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="kID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="Knowledge2SentenceModel" representedClassName="Knowledge2SentenceModel" syncable="YES">
+        <attribute name="kID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="KnowledgeModel" representedClassName="KnowledgeModel" syncable="YES">
+        <attribute name="explain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="kID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="quote" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="quotePinyin" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="weight" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+    </entity>
+    <entity name="KnowledgeTransModel" representedClassName="KnowledgeTransModel" syncable="YES">
+        <attribute name="explain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="kID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="language" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="quote" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="LessonModel" representedClassName="LessonModel" syncable="YES">
+        <attribute name="cID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lessonType" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="lID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="obtain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="parentID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="picture" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="reward" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="version" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="weight" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+    </entity>
+    <entity name="LessonProgressModel" representedClassName="LessonProgressModel" syncable="YES">
+        <attribute name="allStars" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="buyed" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="curStars" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="lID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="progress" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="uID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="LessonTransModel" representedClassName="LessonTransModel" syncable="YES">
+        <attribute name="language" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="obtain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="MessageModel" representedClassName="MessageModel" syncable="YES">
+        <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="icon" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="index" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="link" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="messageID" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="readed" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="summary" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="targetID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="timeStamp" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="typeColor" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="typeName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="PracticeRecordModel" representedClassName="PracticeRecordModel" syncable="YES">
+        <attribute name="answer" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="courseCategoyID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="courseID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lessonID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="result" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="rightTimes" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="timeStamp" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="topicID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="wrongTimes" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+    </entity>
+    <entity name="SentenceModel" representedClassName="SentenceModel" syncable="YES">
+        <attribute name="audio" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="chinese" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="gID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="mode" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="picture" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="pinyin" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="qChinese" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="qPinyin" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="weight" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+    </entity>
+    <entity name="SentenceTransModel" representedClassName="SentenceTransModel" syncable="YES">
+        <attribute name="chinese" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="language" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="SoftwareVersionModel" representedClassName="SoftwareVersionModel" syncable="YES">
+        <attribute name="dbVersion" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="launched" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="version" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TextModel" representedClassName="TextModel" syncable="YES">
+        <attribute name="audio" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="background" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="chinese" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="picture" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="pinyin" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="vedio" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TextTransModel" representedClassName="TextTransModel" syncable="YES">
+        <attribute name="background" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="chinese" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="language" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="UserLaterStatuModel" representedClassName="UserLaterStatuModel" syncable="YES">
+        <attribute name="ccID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="cID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="cpID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="nexCpID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="timeStamp" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="uID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="unitID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="UserModel" representedClassName="UserModel" syncable="YES">
+        <attribute name="coin" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="enabled" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="enddate" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="image" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="level" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="logined" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="role" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="roleEndDate" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="userID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="Word2SentenceModel" representedClassName="Word2SentenceModel" syncable="YES">
+        <attribute name="sID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="wID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="WordModel" representedClassName="WordModel" syncable="YES">
+        <attribute name="audio" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="chinese" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="gID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="picture" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="pinyin" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="property" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="weight" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="wID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="WordTransModel" representedClassName="WordTransModel" syncable="YES">
+        <attribute name="chinese" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="language" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="property" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="wID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="CheckPoint2ContentModel" positionX="36" positionY="180" width="128" height="120"/>
+        <element name="CheckPointModel" positionX="-54" positionY="126" width="128" height="150"/>
+        <element name="CheckPointProgressModel" positionX="-45" positionY="135" width="128" height="105"/>
+        <element name="CheckPointTransModel" positionX="9" positionY="171" width="128" height="90"/>
+        <element name="CommunityModel" positionX="-54" positionY="45" width="128" height="270"/>
+        <element name="CommunityPlateModel" positionX="-9" positionY="135" width="128" height="135"/>
+        <element name="CourseModel" positionX="-54" positionY="126" width="128" height="150"/>
+        <element name="CourseTransModel" positionX="-45" positionY="135" width="128" height="88"/>
+        <element name="ExamModel" positionX="18" positionY="162" width="128" height="328"/>
+        <element name="ExamTransModel" positionX="27" positionY="171" width="128" height="105"/>
+        <element name="FailOrderModel" positionX="-54" positionY="117" width="128" height="135"/>
+        <element name="Grammar2SentenceModel" positionX="18" positionY="162" width="128" height="73"/>
+        <element name="GrammarModel" positionX="-9" positionY="135" width="128" height="75"/>
+        <element name="GrammarTransModel" positionX="9" positionY="153" width="128" height="88"/>
+        <element name="Knowledge2GrammarModel" positionX="0" positionY="144" width="128" height="73"/>
+        <element name="Knowledge2SentenceModel" positionX="9" positionY="153" width="128" height="75"/>
+        <element name="KnowledgeModel" positionX="-9" positionY="135" width="128" height="133"/>
+        <element name="KnowledgeTransModel" positionX="0" positionY="144" width="128" height="120"/>
+        <element name="LessonModel" positionX="-36" positionY="144" width="128" height="210"/>
+        <element name="LessonProgressModel" positionX="45" positionY="189" width="128" height="150"/>
+        <element name="LessonTransModel" positionX="-18" positionY="153" width="128" height="105"/>
+        <element name="MessageModel" positionX="-54" positionY="45" width="128" height="270"/>
+        <element name="PracticeRecordModel" positionX="0" positionY="144" width="128" height="195"/>
+        <element name="SentenceModel" positionX="0" positionY="153" width="128" height="195"/>
+        <element name="SentenceTransModel" positionX="9" positionY="162" width="128" height="88"/>
+        <element name="SoftwareVersionModel" positionX="-54" positionY="-9" width="128" height="88"/>
+        <element name="TextModel" positionX="27" positionY="180" width="128" height="150"/>
+        <element name="TextTransModel" positionX="36" positionY="189" width="128" height="105"/>
+        <element name="UserLaterStatuModel" positionX="-54" positionY="126" width="128" height="165"/>
+        <element name="UserModel" positionX="-63" positionY="-18" width="128" height="210"/>
+        <element name="Word2SentenceModel" positionX="18" positionY="171" width="128" height="75"/>
+        <element name="WordModel" positionX="27" positionY="180" width="128" height="165"/>
+        <element name="WordTransModel" positionX="-9" positionY="144" width="128" height="105"/>
+        <element name="CommunityAudioModel" positionX="-9" positionY="135" width="128" height="90"/>
+    </elements>
+</model>

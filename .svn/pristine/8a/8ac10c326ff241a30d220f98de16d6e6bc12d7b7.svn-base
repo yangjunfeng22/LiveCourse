@@ -1,0 +1,182 @@
+//
+//  MessageNet.m
+//  HelloHSK
+//
+//  Created by yang on 14-7-6.
+//  Copyright (c) 2014年 yang. All rights reserved.
+//
+
+#import "MessageNet.h"
+#import "HttpClient.h"
+#import "MessageDAL.h"
+#import "EncryptionHelper.h"
+
+
+static MessageNet *instance = nil;
+
+@interface MessageNet ()
+@property (nonatomic, strong)HttpClient *requestClient;
+@property (nonatomic, strong)HttpClient *request;
+
+@end
+
+@implementation MessageNet
++(MessageNet *)sharedInstance
+{
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        instance = [[self alloc] init];
+    });
+    return instance;
+}
+
+- (void)dealloc
+{
+    self.requestClient=nil;
+    instance=nil;
+}
+
+- (HttpClient *)request
+{
+    if (!_request) _request = [[HttpClient alloc] init];
+    return _request;
+}
+
+#pragma mark - block
+- (void)requestMessageCountWithUserID:(NSString *)uID messages:(NSString *)messages completion:(void (^)(BOOL, id, NSError *))completion
+{
+    
+    NSString *params = [MessageDAL getMessageCountURLParamsWithApKey:[EncryptionHelper apKey] email:uID messages:messages language:currentLanguage() productID:productID()];
+    
+    [self.request postRequestFromURL:[kHostUrl stringByAppendingString:kMessageCount] params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        //DLog(@"error: %@", error.localizedDescription);
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            //DLog(@"jsonData: %@", jsonData);
+        }
+        
+        if (jsonData) {
+            [MessageDAL parseMessageCountData:jsonData completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+- (void)requestMessageListWithUserID:(NSString *)uID messageID:(NSString *)messageID start:(NSInteger)start length:(NSInteger)length messageType:(NSString *)messageType completion:(void (^)(BOOL, id, NSError *))completion
+{
+
+    NSString *params = [MessageDAL getMessageListURLParamsWithApKey:[EncryptionHelper apKey] email:uID messageID:messageID language:currentLanguage() productID:productID() start:start length:length version:kAPIVersion messageType:messageType];
+    
+    [self.request postRequestFromURL:[kHostUrl stringByAppendingString:kMessageList] params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            //DLog(@"消息列表: %@", jsonData);
+        }
+        
+        if (jsonData) {
+            [MessageDAL parseMessageListData:jsonData completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+- (void)requestMessageContentWithUserID:(NSString *)uID messageID:(NSString *)messageID completion:(void (^)(BOOL, id, NSError *))completion
+{
+
+    NSString *params = [MessageDAL getMessageContentURLParamsWithApKey:[EncryptionHelper apKey] email:uID messageID:messageID language:currentLanguage() productID:productID()];
+    
+    [self.request postRequestFromURL:[kHostUrl stringByAppendingString:kMessageContent] params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        //DLog(@"error: %@", error.localizedDescription);
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            //DLog(@"jsondata: %@", jsonData);
+        }
+        
+        if (jsonData) {
+            [MessageDAL parseMessageContentData:jsonData completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+- (void)postMessageReadedWithUserID:(NSString *)uID messageID:(NSString *)messageID completion:(void (^)(BOOL, id, NSError *))completion
+{
+    MessageDAL *msgDAL = [[MessageDAL alloc] init];
+    NSString *messages = [[NSString alloc] initWithFormat:@"%@|-1|1", messageID];
+    NSString *params = [msgDAL getMessageUpdateURLParamsWithApKey:[EncryptionHelper apKey] email:uID messages:messages language:currentLanguage() productID:productID() version:kAPIVersion];
+    
+    [self.request postRequestFromURL:[kHostUrl stringByAppendingString:kMessageUpdate] params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        //DLog(@"error: %@", error.localizedDescription);
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            //DLog(@"消息已读jsondata: %@", jsonData);
+        }
+        
+        if (jsonData) {
+            [MessageDAL parseMessageReadedData:jsonData completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+- (void)postMessageDeletedWithUserID:(NSString *)uID messageID:(NSString *)messageID completion:(void (^)(BOOL, id, NSError *))completion
+{
+    MessageDAL *msgDAL = [[MessageDAL alloc] init];
+    NSString *messages = [[NSString alloc] initWithFormat:@"%@|0|-1", messageID];
+    NSString *params = [msgDAL getMessageUpdateURLParamsWithApKey:[EncryptionHelper apKey] email:uID messages:messages language:currentLanguage() productID:productID() version:kAPIVersion];
+    
+    [self.request postRequestFromURL:[kHostUrl stringByAppendingString:kMessageUpdate] params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        //DLog(@"error: %@", error.localizedDescription);
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            //DLog(@"消息已删除jsondata: %@", jsonData);
+        }
+        
+        if (jsonData) {
+            [MessageDAL parseMessageReadedData:jsonData completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+- (void)cancel
+{
+    [self.requestClient cancelAllRequest];
+}
+
+@end

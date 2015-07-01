@@ -1,0 +1,40 @@
+//
+//  LiveCourse.pch
+//  LiveCourse
+//
+//  Created by junfengyang on 15/1/5.
+//  Copyright (c) 2015年 junfengyang. All rights reserved.
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_3_0
+#warning "This project uses features only available in iOS SDK 3.0 and later."
+#endif
+
+//#ifdef  DEBUG_TEST
+
+#ifdef __OBJC__
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
+#import <ReactiveCocoa/ReactiveCocoa.h>
+
+#import "GAI.h"
+#import "GAIFields.h"
+#import "GAIDictionaryBuilder.h"
+#import "AppDelegate.h"
+#import "Notification.h"
+#import "MacroDefinition.h"
+#import "constants.h"
+#import "HsExpand.h"
+#import "SystemInfoHelper.h"
+#import "APIDefinition.h"
+#import "HSBaseTool.h"
+#import "GDLocalizableController.h"
+#import "BlocksKit+UIKit.h"
+#import "BlocksKit.h"
+#define MR_SHORTHAND
+#import "CoreData+MagicalRecord.h"
+
+#endif

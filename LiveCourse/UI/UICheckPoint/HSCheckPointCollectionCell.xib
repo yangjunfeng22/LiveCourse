@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CheckPointCollectionCell" id="gTV-IL-0wX" customClass="HSCheckPointCollectionCell">
+            <rect key="frame" x="0.0" y="0.0" width="81" height="63"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="81" height="63"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hdd-SQ-szb">
+                        <rect key="frame" x="9" y="0.0" width="63" height="63"/>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jjP-6T-RJW">
+                        <rect key="frame" x="0.0" y="63" width="81" height="41"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9bH-FZ-RCi">
+                        <rect key="frame" x="19" y="21" width="42" height="22"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            </view>
+            <constraints>
+                <constraint firstAttribute="centerX" secondItem="9bH-FZ-RCi" secondAttribute="centerX" id="7ll-be-NIf"/>
+                <constraint firstItem="jjP-6T-RJW" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Igq-VA-adE"/>
+                <constraint firstAttribute="centerX" secondItem="hdd-SQ-szb" secondAttribute="centerX" id="gQ5-ft-Hae"/>
+                <constraint firstAttribute="trailing" secondItem="jjP-6T-RJW" secondAttribute="trailing" id="hQN-Hb-vrH"/>
+                <constraint firstItem="hdd-SQ-szb" firstAttribute="centerY" secondItem="9bH-FZ-RCi" secondAttribute="centerY" id="hdd-JX-WKZ"/>
+                <constraint firstItem="jjP-6T-RJW" firstAttribute="top" secondItem="hdd-SQ-szb" secondAttribute="bottom" id="ixB-ch-OMk"/>
+            </constraints>
+            <size key="customSize" width="81" height="103"/>
+            <connections>
+                <outlet property="imgvLockedStatu" destination="hdd-SQ-szb" id="yyy-t4-fcQ"/>
+                <outlet property="lblIndex" destination="9bH-FZ-RCi" id="04R-F0-kVX"/>
+                <outlet property="lblTitle" destination="jjP-6T-RJW" id="jSw-t0-fi8"/>
+            </connections>
+            <point key="canvasLocation" x="201.5" y="306.5"/>
+        </collectionViewCell>
+    </objects>
+</document>

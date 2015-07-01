@@ -1,0 +1,526 @@
+//
+//  HSCommunityListViewController.m
+//  HelloHSK
+//
+//  Created by Lu on 14/12/1.
+//  Copyright (c) 2014年 yang. All rights reserved.
+//
+
+#import "HSCommunityListViewController.h"
+#import "HSCommunityListCell.h"
+#import "MJRefresh.h"
+//#import "HSCommunityDetailViewController.h"
+#import "HSMyPostsViewController.h"
+
+#import "CommunityNet.h"
+#import "CommunityDAL.h"
+#import "KeyChainHelper.h"
+#import "MBProgressHUD.h"
+#import "HSCommunityPlateView.h"
+#import "HSCommunityPlateListVC.h"
+#import "CommunityAudioBtn.h"
+#import "HSCommunityDetailVC.h"
+
+#define postsNum 10  //每次访问帖子个数
+
+NSString *const kRefreshCommunityLaudAndReplyCount = @"RefreshCommunityLaudAndReplyCount";
+
+@interface HSCommunityListViewController ()<UISearchDisplayDelegate,HSCommunityPlateViewDelegate,CommunityAudioBtnDelegate>
+
+@property (nonatomic,strong) UISearchBar *searchBar;
+
+@property (nonatomic, strong) UISearchDisplayController *searchController;
+
+@property (nonatomic, strong) HSCommunityPlateView *communityPlateView;
+
+@property (nonatomic, strong) CommunityNet *communityNet;
+
+
+@end
+
+@implementation HSCommunityListViewController
+{
+    NSMutableArray *dataArrary;
+    NSString *lastTopicID;//最后一条帖子的ID
+    MBProgressHUD *hud;
+    
+    NSMutableArray *searchResultsArray;
+    
+    NSInteger currentAudioRow;
+}
+
+
+-(id)initWithStyle:(UITableViewStyle)style{
+    self = [super initWithStyle:style];
+    
+    return self;
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
+    [self loadPlateDataRequest];
+}
+
+
+-(void)viewWillDisappear:(BOOL)animated{
+    
+    [self stopAllAudio];
+    
+    [super viewWillDisappear:animated];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.view.backgroundColor = kColorWhite;
+    
+    kAddObserverNotification(self, @selector(freshCommunityLikedAndReplyCount:), kRefreshCommunityLaudAndReplyCount, nil);
+    
+    self.baseContentView = self.tableView;
+    
+    currentAudioRow = -1;
+    dataArrary = [[NSMutableArray alloc] initWithCapacity:1];
+    searchResultsArray = [NSMutableArray arrayWithCapacity:2];
+    [self initNavItem];
+    
+    self.isUsingHeadPullRefresh = YES;
+    self.isUsingFootPullRefresh = YES;
+    
+    
+    //搜索
+    self.tableView.tableHeaderView = self.searchBar;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    if (kiOS7_OR_LATER) {
+        self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+    }
+    
+    self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+    self.searchController.delegate = self;
+    self.searchController.searchResultsDelegate = self;
+    self.searchController.searchResultsDataSource = self;
+    self.searchController.searchBar.showsCancelButton = NO;
+    
+    //预加载数据
+    
+    [self preloadData];
+    
+    [self performSelector:@selector(startReloadData) withObject:nil afterDelay:0.5f];
+}
+
+-(BOOL)shouldAutomaticallyForwardAppearanceMethods{
+    return YES;
+}
+
+-(void)initNavItem{
+    //我的帖子
+    UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.frame = CGRectMake(0, 0, 80, 40);
+    [button setTitle:MyLocal(@"我的帖子") forState:UIControlStateNormal];
+    [button setTitleColor:kColorMain forState:UIControlStateNormal];
+    button.titleLabel.font = [UIFont systemFontOfSize:16.0f];
+    
+    button.titleEdgeInsets = kiOS7_OR_LATER ? UIEdgeInsetsMake(0, -25, 0, 0):UIEdgeInsetsZero;
+    [button addTarget:self action:@selector(myPosts:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+    
+    self.tableView.tableFooterView = [[UIView alloc] init];
+
+}
+
+#pragma mark - Notification Refresh
+- (void)freshCommunityLikedAndReplyCount:(NSNotification *)notification
+{
+    NSDictionary *dicInfo = notification.userInfo;
+    NSString *topicID = [dicInfo objectForKey:@"TopicID"];
+    NSInteger liked = [[dicInfo objectForKey:@"Liked"] integerValue];
+    NSInteger replied = [[dicInfo objectForKey:@"Replied"] integerValue];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+       dispatch_async(dispatch_get_main_queue(), ^{
+           [self updatePostsFromTopicID:topicID Liked:liked Replied:replied];
+       });
+    });
+}
+
+#pragma mark - action
+
+-(void)loadPlateDataRequest{
+    [self.communityNet requestCommunityPlateListCompletion:^(BOOL finished, id result, NSError *error) {
+        
+        if (finished) {
+            
+            [self loadPlateData];
+        }
+    }];
+}
+
+-(void)loadPlateData{
+    NSArray *plateArray = [CommunityDAL queryCommunityPlateListWithUserID:kUserID];
+    
+    [self.communityPlateView setPlateDataArray:plateArray];
+}
+
+-(void)scrollToSectionZero{
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+}
+
+-(void)startReloadData{
+    if ([self headerIsRefreshing]) {
+        DLog(@"正在刷新");
+        return;
+    }
+    [self performSelectorOnMainThread:@selector(headerRefreshing) withObject:nil waitUntilDone:NO];
+}
+
+-(void)preloadData{
+    //板块
+    [self loadPlateData];
+    
+    //帖子
+    NSArray *array = [NSArray arrayWithArray:[CommunityDAL queryCommunityListWithUserID:kUserID]];
+    [dataArrary setArray:array] ;
+    
+    lastTopicID = ((CommunityModel *)[array lastObject]).topicID;
+    
+    [self.tableView reloadData];
+}
+
+
+//没有数据点击重新加载
+-(void)againToObtain{
+    [super againToObtain];
+    
+    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    [self headLoadTableViewDataSource];
+}
+
+-(void)headLoadTableViewDataSource{
+    [self.communityNet requestCommunityListWithUserID:kUserID mID:@"" length:postsNum filter:CommunityAll version:kAPIVersion keyWords:@"" boardID:0 requestType:CommunityListRequestTypeDataSave completion:^(BOOL finished, id result, NSError *error) {
+        [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+        [self endHeadRefreshTableViewData];
+        
+        if (error.code == 0) {
+            [dataArrary removeAllObjects];
+            [dataArrary setArray:result];
+            
+            lastTopicID = ((CommunityModel *)[dataArrary lastObject]).topicID;
+            
+            [self.tableView reloadData];
+            
+            [self performSelector:@selector(scrollToSectionZero) withObject:nil afterDelay:0.5f];
+            
+        }else{
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:error.domain delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [alert show];
+        }
+    }];
+}
+
+-(void)footLoadTableViewDataSource{
+    DLog(@"%@---",lastTopicID);
+    [self.communityNet requestCommunityListWithUserID:kUserID mID:lastTopicID length:postsNum filter:CommunityAll version:kAPIVersion keyWords:@"" boardID:0 requestType:CommunityListRequestTypeDataUnSave completion:^(BOOL finished, id result, NSError *error) {
+        [self endFootRefreshTableViewData];
+        
+        if (error.code == 0) {
+            [dataArrary addObjectsFromArray:result];
+            
+            lastTopicID = ((CommunityModel *)[dataArrary lastObject]).topicID;
+            
+            [self.tableView reloadData];
+            
+        }else{
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:error.domain delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [alert show];
+        }
+    }];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+}
+
+
+-(void)myPosts:(id)sender{
+    
+    HSMyPostsViewController *myPostsVC = [[HSMyPostsViewController alloc] init];
+    myPostsVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:myPostsVC animated:YES];
+}
+
+
+//更新某条数据
+-(void)updatePostsFromTopicID:(NSString *)topicID Liked:(NSInteger)liked Replied:(NSInteger)replied
+{
+    if (!topicID/* || !liked || !replied*/) {
+        return;
+    }
+    
+    __block NSInteger index;
+    __block BOOL isFind = NO;
+    [dataArrary enumerateObjectsUsingBlock:^(CommunityModel *tempEntity, NSUInteger idx, BOOL *stop) {
+        if ([tempEntity.topicID isEqualToString:topicID]) {
+            index = idx;
+            isFind = YES;
+            *stop = YES;
+        }
+    }];
+    
+    if (isFind) {
+        CommunityModel *oldModel = [dataArrary objectAtIndex:index];
+        oldModel.liked = [NSNumber numberWithInteger:liked];
+        oldModel.replied = [NSNumber numberWithInteger:replied];
+        NSIndexPath *reloadIndexPath = [NSIndexPath indexPathForRow:index inSection:1];
+        [self.tableView reloadRowsAtIndexPaths:@[reloadIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+}
+
+
+//暂停一切语音
+-(void)stopAllAudio{
+    [[NSNotificationCenter defaultCenter] postNotificationName:KAudioShouldStopNotification object:nil];
+}
+
+
+#pragma mark - UI
+
+-(UISearchBar *)searchBar{
+    if (!_searchBar) {
+        _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.tableView.width, 40)];
+        _searchBar.backgroundColor = kColorWhite;
+        _searchBar.placeholder = MyLocal(@"输入关键字查询");
+        [_searchBar sizeToFit];
+    }
+    return _searchBar;
+}
+
+-(HSCommunityPlateView *)communityPlateView{
+    if (!_communityPlateView) {
+        _communityPlateView = [[HSCommunityPlateView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.width, 220)];
+        _communityPlateView.delegate = self;
+    }
+    return _communityPlateView;
+}
+
+
+#pragma mark - communityAudioBtnDelegateDidStartPlaying
+
+-(void)communityAudioBtnDelegateDidStartPlaying:(CommunityAudioBtn *)voiceBubble{
+    currentAudioRow = voiceBubble.tag;
+}
+
+-(void)communityAudioBtnDelegateDidEndPlaying:(CommunityAudioBtn *)voiceBubble{
+    currentAudioRow = -1;
+}
+
+
+#pragma mark - Table view data source
+
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    if ([tableView isEqual:self.tableView]) {
+        return 2;
+    }else{
+        return 1;
+    }
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
+    if ([tableView isEqual:self.tableView]) {
+        if (section == 0) {
+            return 1;
+        }else{
+            return dataArrary.count;
+        }
+        
+    }else{
+        return searchResultsArray.count;
+    }
+    
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return [self tableView:tableView configCellAtIndexPath:indexPath];
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    if ([tableView isEqual:self.tableView]) {
+        if (indexPath.section == 0) {
+            return self.communityPlateView.height;
+        }else{
+            HSCommunityListCell *cell = (HSCommunityListCell *)[self tableView:tableView configCellAtIndexPath:indexPath];
+            return cell.requiredRowHeight;
+        }
+        
+    }else{
+        HSCommunityListCell *cell = (HSCommunityListCell *)[self tableView:tableView configCellAtIndexPath:indexPath];
+        return cell.requiredRowHeight;
+    }
+    
+//    if ([tableView isEqual:self.tableView]) {
+//        if (indexPath.section == 0) {
+//            return self.communityPlateView.height;
+//        }else{
+//            return 200;
+//        }
+//        
+//    }else{
+//        return 200;
+//    }
+}
+
+
+-(UITableViewCell *)tableView:(UITableView *)tableView configCellAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([tableView isEqual:self.tableView]) {
+        
+        if (indexPath.section == 0) {
+            static NSString *communityPlatIdentifier = @"communityPlat";
+            
+            UITableViewCell *communityCell = [tableView dequeueReusableCellWithIdentifier:communityPlatIdentifier];
+            if (communityCell == nil) {
+                communityCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:communityPlatIdentifier];
+                
+                [communityCell addSubview:self.communityPlateView];
+            }
+            
+            return communityCell;
+        }else{
+            
+            static NSString *cellIdentifier = @"myCommunityListCell";
+            
+            HSCommunityListCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+            
+            if (cell == nil) {
+                cell = [[HSCommunityListCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                
+            }
+            
+            CommunityModel *model = [dataArrary objectAtIndex:indexPath.row];
+            [cell setEntity:model];
+            
+            if (![NSString isNullString:model.audio]) {
+                cell.communityAudioBtn.delegate = self;
+                cell.communityAudioBtn.tag = indexPath.row;
+                
+                if (indexPath.row == currentAudioRow) {
+                    [cell.communityAudioBtn startAnimating];
+                } else {
+                    [cell.communityAudioBtn stopAnimating];
+                }
+            }
+            return cell;
+        }
+    }else{
+        
+        static NSString *searchCellIdentifier = @"searchCellIdentifier";
+        
+        HSCommunityListCell *cell = [tableView dequeueReusableCellWithIdentifier:searchCellIdentifier];
+        
+        if (cell == nil) {
+            cell = [[HSCommunityListCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:searchCellIdentifier];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
+        
+//        cell.communityAudioBtn.delegate = self;
+//        cell.communityAudioBtn.tag = indexPath.row;
+//        
+//        if (indexPath.row == currentAudioRow) {
+//            [cell.communityAudioBtn startAnimating];
+//        } else {
+//            [cell.communityAudioBtn stopAnimating];
+//        }
+        
+        CommunityModel *model = [searchResultsArray objectAtIndex:indexPath.row];
+        
+        [cell setEntity:model];
+        
+        if (![NSString isNullString:model.audio]) {
+            cell.communityAudioBtn.delegate = self;
+            cell.communityAudioBtn.tag = indexPath.row;
+            
+            if (indexPath.row == currentAudioRow) {
+                [cell.communityAudioBtn startAnimating];
+            } else {
+                [cell.communityAudioBtn stopAnimating];
+            }
+        }
+        
+        
+        return cell;
+    }
+}
+
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    [self stopAllAudio];
+    
+    if (indexPath.section == 1 || ![tableView isEqual:self.tableView]) {
+        
+        HSCommunityListCell *cell = (HSCommunityListCell *)[tableView cellForRowAtIndexPath:indexPath];
+//        HSCommunityDetailViewController *detailVC = [[HSCommunityDetailViewController alloc] init];
+        HSCommunityDetailVC *detailVC = [[HSCommunityDetailVC alloc] init];
+        detailVC.hidesBottomBarWhenPushed = YES;
+        detailVC.topicID = [cell.entity.topicID copy];
+        [self.navigationController pushViewController:detailVC animated:YES];
+    }
+}
+
+
+#pragma mark - HSCommunityPlateViewDelegate
+-(void)communityPlateViewChoosePlateDelegate:(NSInteger)plateID andTitle:(NSString *)title{
+    HSCommunityPlateListVC *communityPlateListVC = [[HSCommunityPlateListVC alloc]initWithPlateID:plateID];
+    communityPlateListVC.title = title;
+    communityPlateListVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:communityPlateListVC animated:YES];
+}
+
+#pragma mark - UISearchDisplayDelegate
+
+-(void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller{
+    [searchResultsArray removeAllObjects];
+    [controller.searchResultsTableView reloadData];
+}
+
+-(BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString {
+    [searchResultsArray removeAllObjects];
+    if ([NSString isNullString:searchString]) {
+        return NO;
+    }
+    
+    [self.communityNet requestCommunityListWithUserID:kUserID mID:@"" length:postsNum filter:CommunityAll version:kAPIVersion keyWords:[NSString safeString:searchString] boardID:0 requestType:CommunityListRequestTypeDataUnSave completion:^(BOOL finished, id result, NSError *error) {
+        
+        if (error.code == 0) {
+            
+            [searchResultsArray setArray:result];
+        
+            [controller.searchResultsTableView reloadData];
+        }
+    }];
+    
+    return NO;
+}
+
+
+
+-(CommunityNet *)communityNet{
+    if (!_communityNet) {
+        _communityNet = [[CommunityNet alloc] init];
+    }
+    return _communityNet;
+}
+
+
+
+-(void)dealloc{
+    kRemoveObserverNotification(self, kRefreshCommunityLaudAndReplyCount, nil);
+    [dataArrary removeAllObjects];
+    lastTopicID = nil;
+    hud = nil;
+}
+@end

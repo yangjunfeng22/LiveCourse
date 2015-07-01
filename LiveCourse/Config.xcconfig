@@ -1,0 +1,10 @@
+//
+//  Config.xcconfig
+//  LiveCourse
+//
+//  Created by junfengyang on 15/1/5.
+//  Copyright (c) 2015年 junfengyang. All rights reserved.
+//
+
+//  pop库加载的时候的设置
+HEADER_SEARCH_PATHS = "${SRCROOT}/LiveCourse/ThirdLibraries" "${SRCROOT}/LiveCourse/ThirdLibraries/pop" OTHER_CFLAGS = $(inherited) "-isystem${SRCROOT}/LiveCourse/ThirdLibraries" "-isystem${SRCROOT}/LiveCourse/ThirdLibraries/pop"

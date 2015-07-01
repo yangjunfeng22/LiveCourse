@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>user/login</key>
+		<string>
+		{
+		    "Success": true,
+		    "Message": "",
+		    "User": {
+		        "Uid": "8866",
+		        "Email": "qq@qq.cn",
+		        "Enabled": true,
+		        "Enddate": "2014-12-31",
+		        "Nickname": "CrazyFrog",
+		        "Role": "注册用户",
+		        "Picture":"",
+		        "Avatars":""
+		    }
+		}
+		</string>
+
+		<key>user/register</key>
+		<string>
+        {
+		    "Success": true,
+		    "Message": "",
+		    "User": {
+		        "Uid": "8866",
+		        "Email": "qq@qq.cn",
+		        "Enabled": true,
+		        "Enddate": "2014-12-31",
+		        "Nickname": "CrazyFrog",
+		        "Role": "注册用户",
+		        "Picture":"",
+		        "Avatars":""
+		    }
+		}
+		</string>
+
+		<key>course/list</key>
+		<string>
+			{
+    "Success": true,
+    "Message": "",
+    "Records": [
+        {
+            "Cid": 1,
+            "Name": "生活汉语课程",
+            "Picture": "",
+            "Weight": 0,
+            "Version": 1,
+            "ParentID": 0,
+            "Status": 1,
+            "Translation": {
+                "Language": "en",
+                "Name": ""
+            }
+        },
+        {
+            "Cid": 2,
+            "Name": "初级生活汉语课程",
+            "Picture": "",
+            "Weight": 2,
+            "Version": 1,
+            "ParentID": 1,
+            "Status": 1,
+            "Translation": {
+                "Language": "en",
+                "Name": "Beginner"
+            }
+        },
+        {
+            "Cid": 3,
+            "Name": "中级生活汉语课程",
+            "Picture": "",
+            "Weight": 3,
+            "Version": 1,
+            "ParentID": 1,
+            "Status": 1,
+            "Translation": {
+                "Language": "en",
+                "Name": "Intermediate"
+            }
+        },
+        {
+            "Cid": 4,
+            "Name": "高级生活汉语课程",
+            "Picture": "",
+            "Weight": 4,
+            "Version": 1,
+            "ParentID": 1,
+            "Status": 1,
+            "Translation": {
+                "Language": "en",
+                "Name": "Advanced"
+            }
+        },
+{
+"Cid": 5,
+"Name": "商务汉语课程",
+"Picture": "",
+"Weight": 5,
+"Version": 1,
+"ParentID": 0,
+"Status": 1,
+"Translation": {
+"Language": "en",
+"Name": ""
+}
+},
+{
+"Cid": 6,
+"Name": "初级商务汉语课程",
+"Picture": "",
+"Weight": 2,
+"Version": 1,
+"ParentID": 5,
+"Status": 1,
+"Translation": {
+"Language": "en",
+"Name": "Beginner"
+}
+},
+{
+"Cid": 7,
+"Name": "中级商务汉语课程",
+"Picture": "",
+"Weight": 3,
+"Version": 1,
+"ParentID": 5,
+"Status": 1,
+"Translation": {
+"Language": "en",
+"Name": "Intermediate"
+}
+},
+{
+"Cid": 8,
+"Name": "高级商务汉语课程",
+"Picture": "",
+"Weight": 4,
+"Version": 1,
+"ParentID": 5,
+"Status": 1,
+"Translation": {
+"Language": "en",
+"Name": "Advanced"
+}
+}
+
+    ]
+}
+		</string>
+
+		<key>lesson/list</key>
+		<string>
+		{
+		    "Success": true,
+		    "Message": "",
+		    "Records": [
+		        {
+		            "Lid": 1,
+		            "Cid": 1,
+		            "Title": "第一单元",
+		            "Obtain": "",
+		            "Picture": "",
+		            "Weight": 1,
+		            "Version": 1,
+		            "ParentID": 0,
+		            "Status": 1,
+                    "Type": 0,
+		            "Translation": {
+		                "Language": "en",
+		                "Name": "Chapter one",
+		                "Obtain": ""
+		            }
+		        },
+		        {
+		            "Lid": 2,
+		            "Cid": 1,
+		            "Title": "第一课 我叫约翰",
+		            "Obtain": "学完这一课",
+		            "Picture": "",
+		            "Weight": 2,
+		            "Version": 1,
+		            "ParentID": 1,
+		            "Status": 1,
+                    "Type": 0,
+		            "Translation": {
+		                "Language": "en",
+		                "Name": "Lesson one - I am John",
+		                "Obtain": "you can ..."
+		            }
+		        },
+		        {
+		            "Lid": 3,
+		            "Cid": 1,
+		            "Title": "第二课 欢迎来我家",
+		            "Obtain": "学完这一课",
+		            "Picture": "",
+		            "Weight": 3,
+		            "Version": 1,
+		            "ParentID": 1,
+		            "Status": 1,
+                    "Type": 0,
+		            "Translation": {
+		                "Language": "en",
+		                "Name": "Lesson Two - Welcome ...",
+		                "Obtain": "you can ..."
+		            }
+		        },
+		        {
+		            "Lid": 4,
+		            "Cid": 1,
+		            "Title": "第三课 我们喜欢上海",
+		            "Obtain": "学完这一课",
+		            "Picture": "",
+		            "Weight": 4,
+		            "Version": 1,
+		            "ParentID": 1,
+		            "Status": 1,
+                    "Type": 0,
+		            "Translation": {
+		                "Language": "en",
+		                "Name": "Lesson Three - We like ...",
+		                "Obtain": "you can ..."
+		            }
+		        },
+{
+"Lid": 5,
+"Cid": 1,
+"Title": "第四课 我们喜欢陆小健Yeah",
+"Obtain": "学完这一课,你们会爱上我",
+"Picture": "",
+"Weight": 5,
+"Version": 1,
+"ParentID": 1,
+"Status": 1,
+"Type": 0,
+"Translation": {
+"Language": "en",
+"Name": "Lesson Three - We like ...",
+"Obtain": "you can ..."
+}
+},
+{
+"Lid": 6,
+"Cid": 1,
+"Title": "单元测试",
+"Obtain": "",
+"Picture": "",
+"Weight": 6,
+"Version": 1,
+"ParentID": 1,
+"Status": 1,
+"Type": 1,
+"Translation": {
+"Language": "en",
+"Title": "Unit test",
+"Obtain": ""
+}
+}
+		    ]
+		}
+		</string>
+		<key>course/progress</key>
+		<string>
+			{
+		    "Success": true,
+		    "Message": "",
+		    "Uid": 8866,
+		    "Records": [
+		        {
+		            "Lid": 2,
+		            "Progress": 1,
+		            "Status": 2
+		        },
+		        {
+		            "Lid": 3,
+		            "Progress": 0.33,
+		            "Status": 1
+		        }
+		    ]
+		}
+		</string>
+
+
+
+
+
+		<key>lesson/text</key>
+		<string>
+		{
+"Success": true,
+"Message": "",
+    "Result": {
+      "Tid": 1,
+ 	  "Background": "测试早上8点，约翰已经出门了，这是他来上海工作的第一天。在电梯口，他遇到了李沪生。123123",
+"Chinese": "约翰: 你 好 !|李: 你 好 ， 你 是 ？|约翰:我 刚 搬来 ， 叫 约翰1 。 你 呢 ？|李:我 叫 李 沪生 。|约翰:你 姓 李 ， 我 可以 叫 你 小 李 吗 ？|李:小 李 是 我 儿子 ， 大家 都 叫 我 老 李 。",
+"Pinyin": "Yuehan: Nǐ hǎo !|Li: Nǐ hǎo , nǐ shì ?|Yuehan:Wǒ ɡānɡ bānlái , jiào Yuēhàn . Nǐ ne ?|Li:Wǒ jiào Lǐ Hùshēnɡ .|Yuehan:Nǐ xìnɡ Lǐ , wǒ kěyǐ jiào nǐ Xiǎo Lǐ mɑ ?|Li:Xiǎo Lǐ shì wǒ érzi , dàjiā dōu jiào wǒ Lǎo Lǐ .",
+      "Audio": "",
+      "Vedio": "http://192.168.10.98/hsk/sites/default/files/life/video/3.mp4",
+      "Picture": "",
+      "Translate": {
+          "Language": "en",
+          "Chinese": "Nǐ hǎo !|Nǐ hǎo , nǐ shì ?|Wǒ ɡānɡ bānlái , jiào Yuēhàn . Nǐ ne ?|Wǒ jiào Lǐ Hùshēnɡ .|Nǐ xìnɡ Lǐ , wǒ kěyǐ jiào nǐ Xiǎo Lǐ mɑ ?|Xiǎo Lǐ shì wǒ érzi , dàjiā dōu jiào wǒ Lǎo Lǐ .",
+ 		  "Background": "Translate Translate Translate Translate Translate Translate Translate Translate Translate Translate Translate"
+      }
+    } 
+}
+</string>
+
+		<key>knowledge/list</key>
+		<string>
+		{
+    "Success": true,
+    "Message": "",
+    "Records": [
+        {
+            "Kid": 1,
+            "Title": "叫",
+            "Quote": "小 李 是 我 儿子1",
+            "Qpinyin": "Xiǎo Lǐ shì wǒ érzi1",
+            "Description": "藐视",
+            "Weight": 1,
+            "Translation": {
+                "Language": "en",
+                "Title": "Title",
+                "Quote": "quote",
+                "Description": "description123222"
+            },
+             "Grammar":[
+             {
+              "Gid": 1,
+              "Description": "语法描述1",
+              "Translation": {
+                "Language": "en",
+                "Description": "description"
+               }
+             },{
+              "Gid": 2,
+              "Description": "语法描述2",
+              "Translation": {
+                "Language": "en",
+                "Description": "description"
+               }
+             }
+            ],
+            "Sentences": [
+                {
+                    "Sid": 1,
+                    "Chinese": "例句1",
+                    "Pinyin": "nihao",
+                    "Audio": "",
+                    "Picture": "",
+                    "Weight": 1,
+                    "GrammarID":1,
+                    "Translation": {
+                        "Language": "en",
+                        "Chinese": "hello"
+                    }
+                }, {
+                    "Sid": 2,
+                    "Chinese": "例句2",
+                    "Pinyin": "nihao",
+                    "Audio": "",
+                    "Picture": "",
+                    "Weight": 2,
+                    "GrammarID":0,
+                    "Translation": {
+                        "Language": "en",
+                        "Chinese": "hello"
+                    }
+                },
+{
+"Sid": 3,
+"Chinese": "例句3",
+"Pinyin": "nihao",
+"Audio": "",
+"Picture": "",
+"Weight": 3,
+"GrammarID":2,
+"Translation": {
+"Language": "en",
+"Chinese": "hello"
+}
+}, {
+"Sid": 4,
+"Chinese": "例句叫4",
+"Pinyin": "nihao",
+"Audio": "",
+"Picture": "",
+"Weight": 4,
+"GrammarID":0,
+"Translation": {
+"Language": "en",
+"Chinese": "hello"
+}
+}
+            ]
+        }
+    ]
+}
+
+</string>
+	</dict>
+</plist>
+

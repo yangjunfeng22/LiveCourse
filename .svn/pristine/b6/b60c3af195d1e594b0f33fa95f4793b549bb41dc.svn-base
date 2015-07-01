@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14C1510" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="HSCourseItemWordView">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nQ1-qq-aXj">
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="281"/>
+                    <color key="backgroundColor" red="0.86274509799999999" green="0.94117647059999998" blue="0.99607843139999996" alpha="1" colorSpace="calibratedRGB"/>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i0T-gH-dQ7">
+                    <rect key="frame" x="0.0" y="289" width="600" height="1"/>
+                    <color key="backgroundColor" red="0.086274509799999996" green="0.63529411759999999" blue="0.88235294119999996" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="a7w-RG-aho"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H8I-qP-e4n" customClass="HSAudioPlayerButton">
+                    <rect key="frame" x="275" y="275" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="dce-2g-2cR"/>
+                        <constraint firstAttribute="height" constant="50" id="sun-Rm-Rfz"/>
+                    </constraints>
+                    <state key="normal">
+                        <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="you" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qMX-sn-Ydd">
+                    <rect key="frame" x="8" y="408" width="584" height="20.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wa4-ms-qCv" customClass="HSPinyinLabel">
+                    <rect key="frame" x="8" y="345" width="584" height="60"/>
+                    <constraints>
+                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="581-Bv-Z0f"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H0P-3n-45z">
+                    <rect key="frame" x="0.0" y="556" width="600" height="44"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="normal" title="点击查看例句">
+                        <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="showSentenceAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="43x-Yp-nfv"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="i0T-gH-dQ7" secondAttribute="trailing" id="07I-U4-yKW"/>
+                <constraint firstAttribute="centerY" secondItem="H8I-qP-e4n" secondAttribute="centerY" id="7NY-Ew-V0H"/>
+                <constraint firstItem="i0T-gH-dQ7" firstAttribute="top" secondItem="nQ1-qq-aXj" secondAttribute="bottom" constant="1" id="7h5-YB-j0W"/>
+                <constraint firstAttribute="centerX" secondItem="H8I-qP-e4n" secondAttribute="centerX" id="8L9-yk-mny"/>
+                <constraint firstItem="nQ1-qq-aXj" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="8yy-Ay-ejs"/>
+                <constraint firstItem="H0P-3n-45z" firstAttribute="top" relation="greaterThanOrEqual" secondItem="qMX-sn-Ydd" secondAttribute="bottom" constant="6" id="CL2-Ia-tab"/>
+                <constraint firstItem="i0T-gH-dQ7" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="F06-ri-oao"/>
+                <constraint firstAttribute="trailing" secondItem="H0P-3n-45z" secondAttribute="trailing" id="FQ2-YT-hMp"/>
+                <constraint firstAttribute="trailing" secondItem="qMX-sn-Ydd" secondAttribute="trailing" constant="8" id="JQm-4n-fcJ"/>
+                <constraint firstItem="qMX-sn-Ydd" firstAttribute="top" relation="lessThanOrEqual" secondItem="Wa4-ms-qCv" secondAttribute="bottom" constant="17" id="Lmw-Sg-pP7"/>
+                <constraint firstItem="Wa4-ms-qCv" firstAttribute="top" relation="lessThanOrEqual" secondItem="H8I-qP-e4n" secondAttribute="bottom" constant="20" id="PtX-PY-yh4"/>
+                <constraint firstAttribute="trailing" secondItem="nQ1-qq-aXj" secondAttribute="trailing" id="QIa-iQ-Nko"/>
+                <constraint firstItem="qMX-sn-Ydd" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="8" id="QNz-gU-gfG"/>
+                <constraint firstAttribute="bottom" secondItem="H0P-3n-45z" secondAttribute="bottom" id="Zkj-LV-yyI"/>
+                <constraint firstItem="qMX-sn-Ydd" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Wa4-ms-qCv" secondAttribute="bottom" constant="3" id="bQQ-WV-V6s"/>
+                <constraint firstItem="Wa4-ms-qCv" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H8I-qP-e4n" secondAttribute="bottom" constant="2" id="dTb-r3-HZ1"/>
+                <constraint firstItem="H0P-3n-45z" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="dzS-Yj-VPg"/>
+                <constraint firstItem="nQ1-qq-aXj" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="lCP-KY-lcf"/>
+                <constraint firstItem="Wa4-ms-qCv" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="8" id="nIb-8b-Ucs"/>
+                <constraint firstAttribute="trailing" secondItem="Wa4-ms-qCv" secondAttribute="trailing" constant="8" id="pAf-rT-vtc"/>
+                <constraint firstAttribute="centerY" secondItem="i0T-gH-dQ7" secondAttribute="centerY" id="wtO-1M-l9N"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <connections>
+                <outlet property="btnAudioPlayer" destination="H8I-qP-e4n" id="iuo-TI-Guv"/>
+                <outlet property="btnShowSentence" destination="H0P-3n-45z" id="UB3-at-3t2"/>
+                <outlet property="imgvPicture" destination="nQ1-qq-aXj" id="RN6-lh-dzk"/>
+                <outlet property="lblSeparator" destination="i0T-gH-dQ7" id="7iq-7M-Vwa"/>
+                <outlet property="lblTranslation" destination="qMX-sn-Ydd" id="9ND-ST-3wu"/>
+                <outlet property="lblWord" destination="Wa4-ms-qCv" id="O2A-yN-tMv"/>
+            </connections>
+            <point key="canvasLocation" x="7" y="7"/>
+        </view>
+    </objects>
+</document>

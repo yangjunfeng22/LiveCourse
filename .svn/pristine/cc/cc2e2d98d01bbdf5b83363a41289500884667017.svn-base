@@ -1,0 +1,586 @@
+//
+//  CheckPointNet.m
+//  HSWordsPass
+//
+//  Created by yang on 14-9-5.
+//  Copyright (c) 2014年 yang. All rights reserved.
+//
+
+#import "CheckPointNet.h"
+#import "CheckPointDAL.h"
+#import "HttpClient.h"
+#import "SystemInfoHelper.h"
+#import "OpenUDID.h"
+#import "MD5Helper.h"
+#import "FileHelper.h"
+#import "ZipArchive.h"
+
+#import "ASINetworkQueue.h"
+
+@interface CheckPointNet ()<ASIHTTPRequestDelegate>
+{
+    NSString *unzipPath;
+    BOOL isDownloading;
+}
+
+@property (nonatomic, strong) ASINetworkQueue *networdQueue;
+
+@end
+
+@implementation CheckPointNet
+- (id)init
+{
+    self = [super init];
+    if (self)
+    {
+        
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [self cancelRequest];
+    [self cancelDownload];
+}
+
+
+
+- (ASINetworkQueue *)networdQueue
+{
+    if (!_networdQueue)
+    {
+        _networdQueue = [[ASINetworkQueue alloc] init];
+        [_networdQueue reset];
+        //下载队列代理方法
+        [_networdQueue setQueueDidFinishSelector:@selector(downLoadFinished)];
+        [_networdQueue setDelegate:self];
+        [_networdQueue setShouldCancelAllRequestsOnFailure:NO];
+        [_networdQueue setMaxConcurrentOperationCount:1];
+    }
+    return _networdQueue;
+}
+
+- (void)downLoadFinished
+{
+    isDownloading = NO;
+    DLOG_CMETHOD;
+}
+
+#pragma mark - Request
+
+#pragma mark - 
+
+#pragma mark 关卡列表
+- (void)requestCheckPointListDataWithUserID:(NSString *)uID lessonID:(NSString *)lID completion:(void (^)(BOOL, id, NSError *))completion
+{
+    NSString *params = [CheckPointDAL getCheckPointRequestURLParamsWithApKey:[EncryptionHelper apKey] userID:uID lessonID:lID language:currentLanguage() productID:productID()];
+    
+    [self.requestClient postRequestFromURL:[kLifeHostUrl stringByAppendingString:kCheckPointList] params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        //DLog(@"error: %@", error.localizedDescription);
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            DLog(@"关卡数据 jsonData: %@; 源数据: %@", jsonData, responseString);
+        }
+        
+        if (jsonData) {
+            [CheckPointDAL parseCheckPointByData:jsonData completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+#pragma mark 关卡版本号
+- (void)requestCheckPointVersionWithUserID:(NSString *)uID checkPointID:(NSString *)cpID completion:(void (^)(BOOL, id, NSError *))completion
+{
+    NSString *params = [CheckPointDAL getCheckPointVersionRequestURLParamsWithApKey:[EncryptionHelper apKey]  userID:uID checkPointID:cpID productID:productID()];
+    
+    [self.requestClient postRequestFromURL:[kLifeHostUrl stringByAppendingString:kCheckPointVersion] params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        //DLog(@"error: %@", error.localizedDescription);
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+        }
+        
+        if (jsonData) {
+            [CheckPointDAL parseCheckPointVersionByData:jsonData completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+#pragma mark 关卡-内容关系
+- (void)requestCheckPointRelationWithUserID:(NSString *)uID checkPointID:(NSString *)cpID completion:(void (^)(BOOL, id, NSError *))completion
+{
+    NSString *params = [CheckPointDAL getCheckPointRelationRequestURLParamsWithApKey:[EncryptionHelper apKey] userID:uID checkPointID:cpID language:currentLanguage() productID:productID()];
+    
+    [self.requestClient postRequestFromURL:[kLifeHostUrl stringByAppendingString:kCheckPointRelation] params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        //DLog(@"error: %@", error.localizedDescription);
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            //DLog(@"关卡关系 jsonData: %@; 源数据: %@", jsonData, responseString);
+        }
+        
+        if (jsonData) {
+            [CheckPointDAL parseCheckPointReplationByData:jsonData checkPointID:cpID completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+
+#pragma mark 同步关卡进度
+- (void)requestCheckPointSynchronousProgressDataWithUserID:(NSString *)uID lessonID:(NSString *)lID records:(NSString *)records completion:(void (^)(BOOL, id, NSError *))completion
+{
+    NSString *params = [CheckPointDAL getCheckPointProgressRequestURLParamsWithApKey:[EncryptionHelper apKey]  userID:uID lessonID:lID records:records language:currentLanguage() productID:productID() version:kSoftwareVersion];
+    //DLog(@"关卡进度参数: %@", params);
+    [self.requestClient postRequestFromURL:[kLifeHostUrl stringByAppendingString:kCheckPointProgress] params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        //DLog(@"error: %@", error.localizedDescription);
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            //DLog(@"关卡进度： jsonData: %@; 源数据: %@", jsonData, responseString);
+        }
+        
+        if (jsonData) {
+            [CheckPointDAL parseCheckPointProgressByData:jsonData completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+#pragma mark 获取关卡数据下载链接
+- (void)requestCheckPointDataDonwloadAddressWithParams:(id)params completion:(void (^)(BOOL, id, NSError *))completion
+{
+    
+    [self.requestClient postRequestFromURL:[kLifeHostUrl stringByAppendingString:kDownloadFile] params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        //DLog(@"error: %@", error.localizedDescription);
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            //DLog(@"下载数据： jsonData: %@; 源数据: %@", jsonData, responseString);
+        }
+        
+        if (jsonData) {
+            [CheckPointDAL parseCheckPointDownloadByData:jsonData completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+#pragma mark 下载关卡数据
+- (void)downloadCheckPointDataWithUserID:(NSString *)uID checkPointID:(NSString *)cpID address:(NSString *)address completion:(void (^)(BOOL finished, id obj, NSError *error))completion
+{
+    NSString *dataPath        = [NSString stringWithFormat:@"%@.zip", cpID];
+    NSString *dataTmpPath     = [NSString stringWithFormat:@"%@.temp", cpID];
+    NSString *destinationPath =[kDownloadedPath stringByAppendingPathComponent:dataPath];
+    NSString *tempPath        = [kDownloadingPath stringByAppendingPathComponent:dataTmpPath];
+    
+    NSString *params = [CheckPointDAL getDownloadCheckPointDataURLParamsWithApKey:[EncryptionHelper apKey] userID:uID address:address productID:productID() version:kSoftwareVersion];
+    
+    __block void (^downloadCompletion)(BOOL finished, id result, NSError *error) = completion;
+    [self requestCheckPointDataDonwloadAddressWithParams:params completion:^(BOOL finished, id result, NSError *error) {
+        
+        if (finished && result)
+        {
+            if(![[FileHelper sharedInstance] isExistPath:kDownloadingPath])
+            {
+                if(![[FileHelper sharedInstance] createDirectory:kDownloadingPath])
+                {
+                    DLog(@"创建课程临时文件夹失败!");
+                    NSError *error = [NSError errorWithDomain:MyLocal(@"创建课程临时文件夹失败!") code:1 userInfo:nil];
+                    if (downloadCompletion) {
+                        downloadCompletion(NO, nil, error);
+                    }
+                }
+            }
+            
+            if(![[FileHelper sharedInstance] isExistPath:kDownloadedPath])
+            {
+                if(![[FileHelper sharedInstance] createDirectory:kDownloadedPath])
+                {
+                    DLog(@"创建课程文件夹失败!");
+                    NSError *error = [NSError errorWithDomain:MyLocal(@"创建课程文件夹失败!") code:1 userInfo:nil];
+                    if (downloadCompletion) {
+                        downloadCompletion(NO, nil, error);
+                    }
+                }
+            }
+             
+            NSString *dataURL = (NSString *)result;
+            NSURL *url = [NSURL URLWithString:dataURL];
+            //NSLog(@"下载的url: %@", url);
+            //创建请求
+            ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+            //request.delegate = self;//代理
+            //[request setUserInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@", cpID] forKey:@"ID"]];
+            [request setNumberOfTimesToRetryOnTimeout:3];//超时重传3次。
+            [request setShouldContinueWhenAppEntersBackground:YES];//进入background后继续下载
+            [request setAllowResumeForFileDownloads:YES];//断点续传
+            [request setDownloadDestinationPath:destinationPath];//下载路径
+            [request setTemporaryFileDownloadPath:tempPath];//缓存路径
+            request.downloadProgressDelegate = self;//下载进度代理
+            request.showAccurateProgress = YES;
+            
+            __block ASIHTTPRequest *_requestCopy = request;
+            __weak CheckPointNet *weakSelf = self;
+            [request setCompletionBlock:^{
+                DLog(@"response statu: %d", _requestCopy.responseStatusCode);
+                NSError *error;
+                // 解压文件
+                [weakSelf unzipFileWithDestinationPath:destinationPath tempPath:tempPath error:&error];
+                if (downloadCompletion) {
+                    downloadCompletion(YES, nil, error);
+                }
+            }];
+            
+            [request setFailedBlock:^{
+                DLog(@"failed: %@; %@", _requestCopy.responseStatusMessage, _requestCopy.responseString);
+                NSError *error = [NSError errorWithDomain:_requestCopy.error.localizedDescription code:_requestCopy.error.code userInfo:nil];
+                if (downloadCompletion) {
+                    downloadCompletion(YES, nil, error);
+                }
+            }];
+            
+            [self.networdQueue addOperation:request];//添加到队列，队列启动后不需重新启动
+            
+            if (self.networdQueue.isSuspended) {
+                DLog(@"suspend");
+                // 只需调用一次go函数
+                [self.networdQueue go];
+            }
+        }// if end
+        else
+        {
+            NSError *error = [NSError errorWithDomain:MyLocal(@"获取下载链接失败!") code:-1 userInfo:nil];
+            if (downloadCompletion) {
+                downloadCompletion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+#pragma mark Progress
+- (void)setProgress:(float)aProgress
+{
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(downloadProgress:)])
+    {
+        [self.delegate downloadProgress:aProgress];
+    }
+}
+
+#pragma mark Zip Method
+- (void)unzipFileWithDestinationPath:(NSString *)destinationPath tempPath:(NSString *)tempPath error:(NSError **)error
+{
+    //解压
+    unzipPath = [destinationPath stringByDeletingPathExtension];
+    DLog(@"解压路径: %@", unzipPath);
+    ZipArchive *unzip = [[ZipArchive alloc] init];
+    if ([unzip UnzipOpenFile:destinationPath])
+    {
+        BOOL result = [unzip UnzipFileTo:unzipPath overWrite:YES];
+        
+        if (result)
+        {
+            DLog(@"解压成功！");
+            if (error) *error = [NSError errorWithDomain:MyLocal(@"成功解压资源文件!") code:0 userInfo:nil];
+            [self deleteDownloadFileWithDestinationPath:destinationPath tempPath:tempPath];
+        }
+        else
+        {
+            DLog(@"解压资源文件失败!");
+            if (error) *error = [NSError errorWithDomain:MyLocal(@"解压资源文件失败!") code:1 userInfo:nil];
+        }
+        [unzip UnzipCloseFile];
+    }
+    else
+    {
+        DLog(@"打开待解压文件失败!");
+        if (error) *error = [NSError errorWithDomain:MyLocal(@"打开待解压文件失败!") code:2 userInfo:nil];
+    }
+}
+
+- (void)deleteDownloadFileWithDestinationPath:(NSString *)destinationPath tempPath:(NSString *)tempPath
+{
+    if ([[NSFileManager defaultManager] fileExistsAtPath:destinationPath])
+    {
+        if ([[NSFileManager defaultManager] removeItemAtPath:destinationPath error:nil])
+        {
+            DLog(@"删除压缩文件成功!");
+        }
+        else
+        {
+            DLog(@"删除压缩文件失败");
+        }
+    }
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:tempPath])
+    {
+        if ([[NSFileManager defaultManager] removeItemAtPath:tempPath error:nil])
+        {
+            DLog(@"删除临时文件成功!");
+        }
+        else
+        {
+            DLog(@"删除临时文件失败");
+        }
+    }
+}
+
+#pragma mark - 请求关卡-词汇数据
+- (void)requestCheckPointWordDataWithUserID:(NSString *)uID checkPointID:(NSString *)cpID completion:(void (^)(BOOL, id, NSError *))completion
+{
+    NSString *params = [CheckPointDAL getCheckPointContentURLParamsWithApKey:[EncryptionHelper apKey] userID:uID checkPointID:cpID language:currentLanguage() productID:productID()];
+    [self.requestClient postRequestFromURL:[kLifeHostUrl stringByAppendingString:kCheckPointWord] params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        //DLog(@"error: %@", error.localizedDescription);
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            DLog(@"词汇数据 jsonData: %@; 源数据: %@", jsonData, responseString);
+        }
+        
+        if (jsonData) {
+            [CheckPointDAL parseCheckPointContentWordByData:jsonData completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+#pragma mark - 请求关卡-句子数据
+- (void)requestCheckPointSentenceDataWithUserID:(NSString *)uID checkPointID:(NSString *)cpID completion:(void (^)(BOOL, id, NSError *))completion
+{
+    NSString *params = [CheckPointDAL getCheckPointContentURLParamsWithApKey:[EncryptionHelper apKey] userID:uID checkPointID:cpID language:currentLanguage() productID:productID()];
+    [self.requestClient postRequestFromURL:[kLifeHostUrl stringByAppendingString:kCheckPointSentence] params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        //DLog(@"error: %@", error.localizedDescription);
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            DLog(@"句子数据 jsonData: %@; 源数据: %@", jsonData, responseString);
+        }
+        
+        if (jsonData) {
+            [CheckPointDAL parseCheckPointContentSentenceByData:jsonData completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+#pragma mark - 请求关卡-课文数据
+- (void)requestCheckPointLessonTextDataWithUserID:(NSString *)uID checkPointID:(NSString *)cpID Completion:(void (^)(BOOL, id, NSError *))completion
+{
+    NSString *params = [CheckPointDAL getCheckPointContentURLParamsWithApKey:[EncryptionHelper apKey] userID:uID checkPointID:cpID language:currentLanguage() productID:productID()];
+    [self.requestClient postRequestFromURL:[kLifeHostUrl stringByAppendingString:kCheckPointLesson] params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        //DLog(@"error: %@", error.localizedDescription);
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            DLog(@"课文数据 jsonData: %@; 源数据: %@", jsonData, responseString);
+        }
+        
+        if (jsonData) {
+            [CheckPointDAL parseLessonTextByCpID:cpID Data:jsonData completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+    }];
+}
+
+#pragma mark - 请求关卡-知识点数据
+- (void)requestCheckPointKnowledgeDataWithUserID:(NSString *)uID checkPointID:(NSString *)cpID Completion:(void (^)(BOOL, id, NSError *))completion
+{
+    NSString *url = [kLifeHostUrl stringByAppendingString:kCheckPointKnowledge];
+    
+    NSString *params = [CheckPointDAL getCheckPointContentURLParamsWithApKey:[EncryptionHelper apKey] userID:uID checkPointID:cpID language:currentLanguage() productID:productID()];
+    
+    [self.requestClient postRequestFromURL:url params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            //DLog(@"知识点数据 jsonData: %@", jsonData);
+        }
+        
+        if (jsonData) {
+            [CheckPointDAL parseKnowledgeByData:jsonData cpID:(NSString *)cpID completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+        
+    }];
+}
+
+#pragma mark - 请求关卡-测试数据
+- (void)requestCheckPointFinalTestDataWithUserID:(NSString *)uID checkPointID:(NSString *)cpID Completion:(void (^)(BOOL, id, NSError *))completion
+{
+    NSString *url = [kLifeHostUrl stringByAppendingString:kCheckPointExam];
+    NSString *params = [CheckPointDAL getCheckPointContentURLParamsWithApKey:[EncryptionHelper apKey] userID:uID checkPointID:cpID language:currentLanguage() productID:productID()];
+    
+    [self.requestClient postRequestFromURL:url params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            //DLog(@"测试题数据 jsonData: %@; 源数据: %@", jsonData, responseString);
+        }
+        
+        if (jsonData) {
+            [CheckPointDAL parseFinalTestByData:jsonData cpID:cpID completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+        
+    }];
+}
+
+- (void)requestCheckPointContentDataWithUserID:(NSString *)userID checkPointID:(NSString *)cpID checkPointType:(LiveCourseCheckPointType)type completion:(void (^)(BOOL finished, id obj, NSError *error))completion
+{
+    switch (type)
+    {
+        case LiveCourseCheckPointTypeWord:
+        {
+            [self requestCheckPointWordDataWithUserID:userID checkPointID:cpID completion:completion];
+            break;
+        }
+        case LiveCourseCheckPointTypeSentence:
+        {
+            [self requestCheckPointSentenceDataWithUserID:userID checkPointID:cpID completion:completion];
+            break;
+        }
+        case LiveCourseCheckPointTypeLesson:
+        {
+            [self requestCheckPointLessonTextDataWithUserID:userID checkPointID:cpID Completion:completion];
+            break;
+        }
+        case LiveCourseCheckPointTypeKnowledge:
+        {
+            [self requestCheckPointKnowledgeDataWithUserID:userID checkPointID:cpID Completion:completion];
+            break;
+        }
+        case LiveCourseCheckPointTypeTest:
+        {
+            [self requestCheckPointFinalTestDataWithUserID:userID checkPointID:cpID Completion:completion];
+            break;
+        }
+        default:
+        {
+            if (completion) {
+                completion(NO, nil, nil);
+            }
+            break;
+        }
+    }
+}
+
+#pragma mark - 同步记录的测验数据
+- (void)synchronousPracticeRecordWithUserID:(NSString *)userID record:(NSString *)record completion:(void (^)(BOOL, id, NSError *))completion
+{
+    NSString *url = [kLifeHostUrl stringByAppendingString:kPracticeRecord];
+    NSString *params = [CheckPointDAL getPracticeRecordURLParamsWithApKey:[EncryptionHelper apKey] userID:userID record:record language:currentLanguage() productID:productID()];
+    
+    [self.requestClient postRequestFromURL:url params:params completion:^(BOOL finished, NSData *responseData, NSString *responseString, NSError *error) {
+        
+        id jsonData = nil;
+        if (responseData && error.code == 0) {
+            jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+            DLog(@"同步做题记录 jsonData: %@; 源数据: %@", jsonData, responseString);
+        }
+        
+        if (jsonData) {
+            [CheckPointDAL parsePracticeRecordByData:jsonData completion:completion];
+        }
+        else
+        {
+            if (completion){
+                completion(NO, nil, error);
+            }
+        }
+        
+    }];
+}
+
+#pragma mark - Cancel
+- (void)cancelRequest
+{
+    [self.requestClient cancelAllRequest];
+}
+
+- (void)cancelDownload
+{
+    if (isDownloading){
+        isDownloading = NO;
+    }
+    
+    if (self.networdQueue){
+        [self.networdQueue cancelAllOperations];
+    }
+}
+
+- (BOOL)isRequestCanceled
+{
+    return ([self.requestClient isRequestAllCanceled]);
+}
+
+- (BOOL)isDownloadCanceled
+{
+    return ([self.networdQueue operationCount] <= 0);
+}
+
+@end

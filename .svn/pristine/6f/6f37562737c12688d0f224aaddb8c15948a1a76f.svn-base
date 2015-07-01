@@ -1,0 +1,249 @@
+/* 
+  Localizable.strings
+  LiveCourse
+
+  Created by junfengyang on 15/2/10.
+  Copyright (c) 2015年 junfengyang. All rights reserved.
+*/
+//通用部分
+"网络不可用，请检查网络设置" = "Network unavailable,please check the network settings";
+"请输入正确的邮箱地址" = "Please input a valid e-mail address";
+"请输入邮箱地址" = "Please input the e-mail address";
+"请输入密码" = "Please input the password";
+"请输入正确的密码" = "Please enter correct password";
+
+"正在同步数据" = "Data synchronizing";
+"用户名:" = "User name";
+"Email:" = "Email:";
+"密码:" = "Password:";
+"登录" = "Sign in";
+"忘记密码?" = "Lost password?";
+"注册" = "Register";
+"免费注册" = "Free registration";
+"随便看看" = "Look around";
+"设置" = "Settings";
+"关于我们" = "About us";
+"意见反馈" = "Feedback";
+"分享" = "Share";
+"商务" = "Business";
+"生活" = "Life";
+"正在发送消息" = "Message delivering";
+"检查更新" = "Check for updates";
+"正在检查更新" = "Updates checking";
+"有新版本是否更新" = "New version is available! Update now?";
+"已经是最新版本" = "New version already";
+"立即更新" = "Update Now!";
+"请输入6-16个字符的密码" = "Please input 6-16 character password";
+"6-16个字符" = "6-16 characters";
+"删除" = "Delete";
+"删除成功" = "Delete successfully";
+"暂无数据" = "No data available ";
+"第_关" = "Level_";
+"取消" = "Cancel";
+"确定" = "Confirm";
+"评价我们" = "Rate us";
+"应用推荐" = "Featured App";
+"登出" = "Logout";
+"词汇通关" = "Hello Words";
+"请设置您的邮箱" = "Please set your mail box";
+"数据封装出错!" = "Data encapsulation error";
+"获取下载链接失败!" = "Failure to get the download link";
+"创建课程临时文件夹失败!" = "Failure to creat a temparory course folder";
+"创建课程文件夹失败!" = "Failure to creat a course folder";
+"打开待解压文件失败!" = "Failure to open the zipped files";
+"更多" = "More";
+"加载失败" = "Failed to load";
+"清除缓存" = "Clear cache";
+"消息" = "Message";
+"退出" = "Logout";
+
+/*tips*/
+"开始" = "Start";
+"检查更新" = "Check for updates";
+"有新版本是否更新?" = "New version is available! Update now?";
+"忽略" = "Ignore";
+"退出应用" = "Quit";
+"立即更新" = "Update Now!";
+"解压失败" = "解压失败";
+"下载失败" = "下载失败";
+"正在发送消息..." = "message delivering...";
+"请重新下载数据" = "Please download your data again";
+"注册中" = "Being registered";
+"请先下载数据" = "Please download data first";
+
+//注册
+"邮箱已被注册" = "Email has been registered";
+"两次输入密码不一致" = "Entered passwords differ";
+"已有账号" = "Existing account";
+"确认密码" = "Confirm password";
+"再次输入您的密码" = "Input password again";
+"密码不匹配" = "Password does not match";
+"注册汉声账号" = "Register an account with HSChinese";
+
+//登录
+"用户不存在" = "Invalid username";
+"用户名与密码不匹配" = "User name and password unmatched";
+"汉声账号" = "HSChinese account";
+
+//vip
+"支付结果确认中" = "Payment remains to be confirmed";
+"恭喜你, VIP购买成功!" = "Congratulation! You've been our VIP now.";
+"支付失败" = "Payment failure!";
+"VIP购买" = "VIP purchase";
+"账户余额: " = "Account balance: ";
+"VIP到期时间:%@" = "VIP Expiration Date: %@";
+
+//课程-课时
+"选择课程" = "Choose Course";
+"学完这一课，你可以:" = "After this lesson, you should be able to:";
+"开始" = "Start";
+
+//生词
+"点击查看例句" = "Refer to the example sentence";
+"下一词" = "Next";
+"下一句" = "Next";
+"返回" = "Back";
+
+//知识点
+"下一知识点" = "Next";
+
+//测试
+"重置" = "Reset";
+"提交老师" = "Submit to the teacher";
+"检查" = "Check";
+"继续" = "Continue";
+
+//报表
+"真棒！您已学完本课了哟~" = "Cool，You’ve finished this lesson.";
+"真棒，你已学完本课了。该课程已经全部结束了哦。" = "Cool！You’ve finished this lesson. This is the end of the whole course";
+"小小奖励作为鼓励，要继续保持哦~" = "Keep up, following rewards are yours.";
+"送您%@汉声币" = "%@ Hansheng Coins for you";
+"一组新的生词等您来挑战" = "Challenge a set of new words";
+"您可以来学%@啦" = "Welcome to %@";
+"成为VIP继续学习" = "Continue to study as a VIP";
+"进入下一课" = "Next lesson";
+"没有通过呢，再努力一下下吧~" = "You need a little more effort to pass the test";
+"通关以后你可以获得以下奖励:" = "Rewards for you after passing the test";
+"重新测试" = "Retest";
+"测试结果" = "Test Result";
+
+/*新版新增*/
+"越狱状态, 不能进行应用内购买!" = "Your phone is in jailbreak state and cannot support In-App Purchase service!";
+"已完成" = "done";
+"充值" = "Top up";
+"充值中心" = "Voucher Center";
+"汉声币作用" = "Why Hansheng Coins";
+"访问限制" = "limited access";
+"您的设备不允许在app store内购买东西" = "Your device is not allowed to purchase in the App Store";
+"充值成功" = "Successful top up";
+"充值失败" = "Top up failure";
+"支付成功" = "Successful payment";
+"正在跳转到浏览器" = "Jumping to the web explorer";
+"系统" = "system";
+"好友" = "friends";
+"教师" = "teachers";
+"全部" = "total";
+"游客登录" = "Guest login";
+"创建个人档案" = "Creat personal profile";
+
+"用户名" = "User name";
+"开始学习" = "Learn";
+"继续学习" = "Continue";
+"汉声币" = "Hansheng Coins";
+
+"立即充值" = "Top up right now";
+
+"充值常见问题\n1.充值成功后,我怎么查看这笔充值记录？\n充值成功后，请及时查收。您可以登陆到个人账户——交易中心里查看充值明细。一旦充值成功，汉声币余额不可转账或退款\n\n2.充值成功后何时可以支付\n一旦您的充值操作完成，您充值的余额会即可注入您的汉声币账号，并可以立刻支付\n\n3.为什么我无法完成支付？\n为了保障用户权益，会对每笔交易进行判断。如果认为存在风险，您将无法完成支付也不会对您进行扣款。请您改用官方渠道购买汉声币" = "Top up FAQ\n1.How can I find my top up record if my top up is successful?\nYou can go to Billing history to find your top up record. Hansheng Coins can't be transferred or refunded once your top up is successful. Please check your account immediately after your top up\n\n2.When can I use my Hansheng Coins after I top up successfully?\nHansheng Coins will be credited to your account immediately if your top up is successful; and you can put them into use right away\n\n3.Why can't I complete my payment?\nIn order to protect the interests of our users, each transaction will be closely watched. If there's a potential risk, you will not be able to complete the payment, nor will you be charged. We highly recommend you to make payments through our official channels";
+
+
+"clearup-guide" = "clearup-guide-en";
+
+"点击屏幕，重新加载" = "click for reloading";
+
+"游客" = "guest";
+
+
+"学习" = "Study";
+"社区" = "Community";
+"详情" = "Detail";
+"我的帖子" = "My post";
+"发帖" = "Post";
+"我发表的" = "Published by me";
+"我回复的" = "Replied by me";
+"发表" = "Publish";
+"标题 (必填)" = "Title(required)";
+"内容:" = "Content:";
+"赞" = "Like";
+"回复楼主" = "Reply to the original poster";
+"楼主" = "Original poster";
+"跟帖" = "Follow the post";
+"楼" = "Floor";
+"发帖失败" = "Failed to post";
+"选择图片" = "Select image";
+"相册" = "Photo";
+"照相机" = "Camera";
+"新浪微博" = "Sina Weibo";
+"分享成功" = "Sharing success";
+"分享失败" = "failed to share";
+"取消分享" = "stop sharing";
+"授权失败" = "authorization failure";
+"创建失败" = "Failed to create";
+
+"问题订单" = "Unfinished order";
+"订单号" = "Order number";
+"重试" = "Try it again";
+"生成订单失败!" = "Failed to place the order";
+"北京时间" = "Beijing time";
+"取消" = "cancel";
+"电话: " = "Telephone number: ";
+"联系我们\n" = "";
+"个字" = "word";
+
+//数据加载
+"加载数据" = "Data loading…";
+
+//用户引导
+"你知道吗？中文其实很简单很有趣" = "Chinese learning can be interesting, really?";
+"全新的学习模式，让你循序渐进 " = "Brand-new mode to learn Chinese step by step";
+"生动的Flash视频，让你学习不枯燥" = "Lively Flash video to innovate your learning";
+"时尚的口语学习，更让你爱不释手" = "Fashionable spoken Chinese to fascinate you ";
+"轻松愉悦学汉语，就从这里开始~" = "Learn Chinese here in an interesting way";
+"立即体验" = "Go";
+
+"是否确认购买%@的VIP" = "VIP expiration:%@. Confirmed to buy?";
+
+"隐藏翻译" = "Hide";
+"显示翻译" = "Translate";
+
+"对" = "true";
+"错" = "false";
+
+"想知道我是怎么学汉语的吗？去汉声中文，用Hello Daily" = "Do you want to know how to learn Chinese well? Come to HSChinese and experience Hello Daily Course.";
+
+"清除缓存" = "Clear cache";
+"clearup-guide" = "clearup-guide-en";
+"语言" = "Language";
+
+"输入关键字查询" = "Search by key word";
+"按住说话" = "Hold to Talk";
+"手指上滑,取消发送" = "Slide up to cancel";
+"录音时间太短" = "Message too short";
+"点击录音" = "Clik to record";
+"点击停止" = "Click to stop";
+"重录" = "Rerecord";
+"重录会删除刚才的录音" = "Your previous recording will be replaced after rerecording.";
+"音频格式转化失败" = "Audio format conversion failure";
+"确定放弃当前输入吗?" = "Confirm to abandon the current input? ";
+"放弃输入" = "Yes";
+
+"回复" = "Reply";
+"内容不能为空" = "content shall not be empty";
+
+//刷新控件
+"更多.." = "More..";
+"松开即可加载" = "Loosen for loading";
+"下拉刷新" = "Pull-down to refresh";
+"松开即可刷新" = "Loosen for refreshing";
+"正在加载数据" = "Data loading…";
+
+"最后更新" = "Latest update";

@@ -1,0 +1,490 @@
+//
+//  keyboardToolBar.m
+//  LiveCourse
+//
+//  Created by Lu on 15/6/1.
+//  Copyright (c) 2015年 junfengyang. All rights reserved.
+//
+
+#import "KeyboardToolBar.h"
+#import "KeyboardImgManageView.h"
+#import "KeyBoardVoiceManageView.h"
+
+
+@interface KeyboardToolBar ()<KeyboardImgManageViewDelegate,KeyBoardVoiceManageViewDelegate,UITextFieldDelegate,HPGrowingTextViewDelegate>
+
+@property (nonatomic, strong) UIView *lineView;                 //线条
+
+@property (nonatomic, strong) UIButton *voiceBtn;               //语音
+@property (nonatomic, strong) UIView *voiceRedView;           //图片红点
+@property (nonatomic, strong) UITextField *hiddenVoiceTextField;
+@property (nonatomic, strong) KeyBoardVoiceManageView *voiceManageView;
+
+
+
+
+@property (nonatomic, strong) UIButton *imageBtn;               //图片
+@property (nonatomic, strong) UIView *imageRedView;             //图片红点
+@property (nonatomic, strong) UITextField *hiddenImageTextField;
+@property (nonatomic, strong) KeyboardImgManageView *imgManageView;//图片
+
+@property (nonatomic, strong) UIButton *sendBtn;                //发送
+
+
+
+@end
+
+@implementation KeyboardToolBar
+{
+    CGFloat oldViewHeight;
+}
+
+
+-(void)layoutSubviews{
+    [super layoutSubviews];
+    
+    CGFloat tempLeft = self.voiceBtn.right + 5;
+    //图片按钮
+    if (_isShowImgBtn) {
+        self.imageBtn.left = tempLeft;
+        tempLeft = self.imageBtn.right + 5;
+    }else{
+        _imageBtn = nil;
+    }
+    
+    //发送按钮
+    CGFloat contentTextFieldWidth = 0;
+    if (_isShowSendBtn) {
+        self.sendBtn.right = self.width - 5;
+        
+        contentTextFieldWidth = (self.sendBtn.left - 5) - tempLeft;
+        
+    }else{
+        _sendBtn = nil;
+        
+        contentTextFieldWidth = self.width - 5 - tempLeft;
+    }
+    
+    //输入框
+    if (_isShowContentTextField) {
+        self.contentTextField.left = tempLeft;
+        self.contentTextField.width = contentTextFieldWidth;
+        self.contentTextField.maxNumberOfLines = 3;
+    }else{
+        _contentTextField = nil;
+    }
+}
+
+-(id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, kKeyboardToolBarDefaultHeight)];
+    
+    if (self) {
+        
+        [self initAction];
+    }
+    return self;
+}
+
+
+-(void)initAction{
+    self.lineView.backgroundColor = kColorLine2;
+    
+    self.isShowImgBtn = YES;
+    self.isShowContentTextField = YES;
+    self.isShowSendBtn = YES;
+    self.isChangeViewFrame = NO;
+    
+    self.voiceBtn.backgroundColor = kColorClear;
+    
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillHide:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
+}
+
+
+-(void)dealloc{
+    oldViewHeight = 0;
+    self.imageData = nil;
+    self.audioData = nil;
+    self.viewController = nil;
+    self.changeTableView = nil;
+
+    _voiceManageView = nil;
+    _imgManageView =nil;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+}
+
+
+
+-(void)setIsShowImgBtn:(BOOL)isShowImgBtn{
+    _isShowImgBtn = isShowImgBtn;
+    [self setNeedsLayout];
+}
+
+-(void)setIsShowContentTextField:(BOOL)isShowContentTextField{
+    _isShowContentTextField = isShowContentTextField;
+    [self setNeedsLayout];
+}
+
+-(void)setIsShowSendBtn:(BOOL)isShowSendBtn{
+    _isShowSendBtn = isShowSendBtn;
+    
+    [self setNeedsLayout];
+}
+
+-(void)setContentTextFieldPlaceholder:(NSString *)contentTextFieldPlaceholder{
+    _contentTextFieldPlaceholder = contentTextFieldPlaceholder;
+    //设置文本默认文字  自动打开输入框
+    self.isShowContentTextField = YES;
+    
+    self.contentTextField.placeholder = _contentTextFieldPlaceholder;
+}
+
+
+-(void)setViewController:(UIViewController *)viewController{
+    _viewController = viewController;
+    
+    oldViewHeight = viewController.view.height;
+}
+
+
+-(void)renewStatus{
+    
+    if (_changeTableView) {
+        self.changeTableView.height = self.top - (kiOS7_OR_LATER ? 64 : -40);
+    }
+    
+    if (self.voiceManageView) {
+        [self.voiceManageView renewStatus];
+        self.voiceManageView = nil;
+    }
+}
+
+
+#pragma mark - KeyboardImgManageViewDelegate
+
+-(void)keyboardImgManageImageSelectedDelegate:(NSData *)imageData{
+    self.imageRedView.hidden = NO;
+    self.imageData = [NSData dataWithData:imageData];
+}
+
+-(void)keyboardImgManageImageDeleteDelegate{
+    self.imageRedView.hidden = YES;
+    self.imageData = nil;
+    
+}
+
+#pragma mark - keyBoardVoiceManageVoiceSelectedDelegate
+-(void)keyBoardVoiceManageVoiceSelectedDelegate:(NSData *)voiceData andDuration:(NSInteger)duration{
+    self.voiceRedView.hidden = NO;
+    self.audioData = voiceData;
+    self.duration = duration;
+}
+
+-(void)keyBoardVoiceManageVoiceDeleteDelegate{
+    self.voiceRedView.hidden = YES;
+    self.audioData = nil;
+    self.duration = 0;
+}
+
+#pragma mark - HPGrowingTextViewDelegate
+- (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height{
+    float diff = (growingTextView.frame.size.height - height);
+    
+    [UIView animateWithDuration:0.2f animations:^{
+        self.height = self.height-diff;
+        self.top = self.top+diff;
+    }];
+}
+
+
+#pragma mark - UI
+
+-(UIView *)lineView{
+    if (!_lineView) {
+        _lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.width, 0.5f)];
+        [self addSubview:_lineView];
+    }
+    return _lineView;
+}
+
+-(UIButton *)voiceBtn{
+    if (!_voiceBtn) {
+        
+        UIImage *image = [UIImage imageNamed:@"voice_icon_btn"];
+        UIImage *imageH = [UIImage imageNamed:@"voice_icon_btn_on"];
+        
+        _voiceBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _voiceBtn.size = CGSizeMake(32, 32);
+        
+        _voiceBtn.left = 5;
+        _voiceBtn.centerY = self.height/2;
+        [_voiceBtn setImage:image forState:UIControlStateNormal];
+        [_voiceBtn setImage:imageH forState:UIControlStateHighlighted];
+        [_voiceBtn addTarget:self action:@selector(voiceBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        
+        [self addSubview:_voiceBtn];
+    }
+    return _voiceBtn;
+}
+
+
+-(UIView *)voiceRedView{
+    if (!_voiceRedView) {
+        _voiceRedView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 6, 6)];
+        _voiceRedView.centerX  = self.voiceBtn.right - 5;
+        _voiceRedView.centerY = self.voiceBtn.top + 5;
+        _voiceRedView.backgroundColor = [UIColor redColor];
+        _voiceRedView.layer.cornerRadius = 3;
+        _voiceRedView.layer.masksToBounds = YES;
+        _voiceRedView.hidden = YES;
+        [self addSubview:_voiceRedView];
+    }
+    return _voiceRedView;
+}
+
+
+-(UITextField *)hiddenVoiceTextField{
+    
+    if (!_hiddenVoiceTextField) {
+        //隐藏按钮
+        _hiddenVoiceTextField = [[UITextField alloc] initWithFrame:self.voiceBtn.frame];
+        _hiddenVoiceTextField.inputView = self.voiceManageView;
+        _hiddenVoiceTextField.hidden = YES;
+        [self addSubview:_hiddenVoiceTextField];
+    }
+    return _hiddenVoiceTextField;
+}
+
+-(KeyBoardVoiceManageView *)voiceManageView{
+    if (!_voiceManageView) {
+        _voiceManageView = [[KeyBoardVoiceManageView alloc] init];
+        _voiceManageView.delegate = self;
+        _voiceManageView.maxRecodeTime = self.maxRecodeTime;
+        
+    }
+    return _voiceManageView;
+}
+
+
+
+-(UIButton *)imageBtn{
+    if (!_imageBtn) {
+        UIImage *image = [UIImage imageNamed:@"path_icon_btn"];
+        UIImage *imageH = [UIImage imageNamed:@"path_icon_btn_on"];
+        
+        _imageBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _imageBtn.size = CGSizeMake(32, 32);
+        
+        _imageBtn.centerY = self.height/2;
+        [_imageBtn setImage:image forState:UIControlStateNormal];
+        [_imageBtn setImage:imageH forState:UIControlStateHighlighted];
+        
+        [_imageBtn addTarget:self action:@selector(imgBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        
+        [self addSubview:_imageBtn];
+    }
+    return _imageBtn;
+}
+
+
+-(UITextField *)hiddenImageTextField{
+    if (!_hiddenImageTextField) {
+        //隐藏按钮
+        _hiddenImageTextField = [[UITextField alloc] initWithFrame:self.imageBtn.frame];
+        _hiddenImageTextField.inputView = self.imgManageView;
+        _hiddenImageTextField.hidden = YES;
+        [self addSubview:_hiddenImageTextField];
+    }
+    return _hiddenImageTextField;
+}
+
+
+
+-(UIView *)imageRedView{
+    if (!_imageRedView) {
+        _imageRedView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 6, 6)];
+        _imageRedView.centerX  = self.imageBtn.right - 5;
+        _imageRedView.centerY = self.imageBtn.top + 5;
+        _imageRedView.backgroundColor = [UIColor redColor];
+        _imageRedView.layer.cornerRadius = 3;
+        _imageRedView.layer.masksToBounds = YES;
+        _imageRedView.hidden = YES;
+        [self addSubview:_imageRedView];
+    }
+    return _imageRedView;
+}
+
+-(HPGrowingTextView *)contentTextField{
+    if (!_contentTextField) {
+        _contentTextField = [[HPGrowingTextView alloc] init];
+        _contentTextField.height = self.height - 14;
+
+//        _contentTextField.borderStyle = UITextBorderStyleRoundedRect;
+        _contentTextField.layer.borderWidth = 0.5;
+        _contentTextField.layer.borderColor = kColorLine2.CGColor;
+        _contentTextField.layer.cornerRadius = 5.0f;
+        _contentTextField.layer.masksToBounds = YES;
+        _contentTextField.centerY = self.height/2;
+        _contentTextField.backgroundColor = kColorWhite;
+        _contentTextField.textColor = kColorWord;
+        _contentTextField.font = [UIFont systemFontOfSize:16.0f];
+        _contentTextField.minNumberOfLines = 1;
+        _contentTextField.maxNumberOfLines = 3;
+        _contentTextField.contentInset = UIEdgeInsetsMake(-2, -2, -2, -2);
+        _contentTextField.delegate = self;
+//        _contentTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+        [self addSubview:_contentTextField];
+    }
+    return _contentTextField;
+}
+
+
+-(KeyboardImgManageView *)imgManageView{
+    if (!_imgManageView) {
+        _imgManageView = [[KeyboardImgManageView alloc] init];
+        _imgManageView.delegate = self;
+        
+    }
+    return _imgManageView;
+}
+
+-(void)textFieldDidBeginEditing:(UITextField *)textField{
+    [self.voiceManageView recordEnd:nil];
+}
+
+
+#pragma mark - action
+-(UIButton *)sendBtn{
+    if (!_sendBtn) {
+        _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        
+        UIImage *image = [UIImage imageNamed:@"send_icon_btn"];
+        UIImage *imageH = [UIImage imageNamed:@"send_icon_btn_on"];
+        
+        _sendBtn.bounds = CGRectMake(0, 0, 32, 32);
+        _sendBtn.centerY = self.height * 0.5;
+        _sendBtn.right = self.width-5;
+
+        [_sendBtn setImage:image forState:UIControlStateNormal];
+        [_sendBtn setImage:imageH forState:UIControlStateHighlighted];
+        [_sendBtn addTarget:self action:@selector(send:) forControlEvents:UIControlEventTouchUpInside];
+        _sendBtn.backgroundColor = kColorClear;
+        
+        [self addSubview:_sendBtn];
+    }
+    return _sendBtn;
+}
+
+-(void)send:(id)sender{
+    [self KeyboardToolBarResignFirstResponder];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(keyboardToolBarDelegateSendBtnClick)]) {
+        [self.delegate keyboardToolBarDelegateSendBtnClick];
+    }
+}
+
+
+-(void)imgBtnClick:(id)sender
+{
+    [self.voiceManageView recordEnd:nil];
+    self.imgManageView.viewController = self.viewController;
+    [self.hiddenImageTextField becomeFirstResponder];
+}
+
+
+-(void)voiceBtnClick:(id)sender{
+    [self.hiddenVoiceTextField becomeFirstResponder];
+}
+
+
+-(void)KeyboardToolBarResignFirstResponder{
+    if (self.isShowContentTextField && [self.contentTextField isFirstResponder]) {
+        [self.contentTextField resignFirstResponder];
+    }
+    if (self.isShowImgBtn && [self.hiddenImageTextField isFirstResponder]) {
+        [self.hiddenImageTextField resignFirstResponder];
+    }
+    if ([self.hiddenVoiceTextField isFirstResponder]) {
+        [self.hiddenVoiceTextField resignFirstResponder];
+    }
+}
+
+
+-(void)stopRecordVoiceOrPlay{
+    [self.voiceManageView stopVoiceAction];
+    [self.voiceManageView recordEnd:nil];
+}
+
+
+#pragma mark - keyboard notification
+
+- (void)keyboardWillShow:(NSNotification *)notification {
+    NSDictionary *userInfo = [notification userInfo];
+    NSValue *aValue = [userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
+    
+    CGRect keyboardRect = [aValue CGRectValue];
+    keyboardRect = [self.viewController.view convertRect:keyboardRect fromView:nil];
+    
+    CGFloat keyboardTop = keyboardRect.origin.y;
+    
+    //动画
+    NSValue *animationDurationValue = [userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    NSTimeInterval animationDuration;
+    [animationDurationValue getValue:&animationDuration];
+    
+    NSValue *curverValue = [userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey];
+    UIViewAnimationCurve curve;
+    [curverValue getValue:&curve];
+    
+    
+    CGFloat tempTop = keyboardTop - self.height;
+    
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:animationDuration];
+    [UIView setAnimationCurve:curve];
+    
+    self.top = tempTop;
+    if (self.isChangeViewFrame) {
+        CGFloat top = kiOS7_OR_LATER ? 64 : 0;
+        if (_changeTableView) {
+            self.changeTableView.height = tempTop - top;
+        }
+        
+    }
+    
+    [UIView commitAnimations];
+}
+- (void)keyboardWillHide:(NSNotification *)notification {
+    //停止继续录音
+    [self.voiceManageView recordEnd:nil];
+    
+    NSDictionary *userInfo = [notification userInfo];
+    //获取键盘上下移动时动画的时间
+    NSValue *animationDurationValue = [userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    NSTimeInterval animationDuration;
+    [animationDurationValue getValue:&animationDuration];
+    
+    //将视图向下恢复到正常位置,并使用动画
+    [UIView animateWithDuration:animationDuration animations:^{
+        self.bottom = self.viewController.view.height;
+//        if (self.isChangeViewFrame) {
+            if (_changeTableView) {
+                CGFloat top = kiOS7_OR_LATER ? 64 : 0;
+                self.changeTableView.height = self.top - top;
+            }
+//        }
+    }];
+}
+
+
+
+@end

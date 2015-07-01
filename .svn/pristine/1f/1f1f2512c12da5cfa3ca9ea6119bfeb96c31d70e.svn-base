@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.ExceptionBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            scope = "0"
+            stopOnStyle = "0">
+            <Actions>
+               <BreakpointActionProxy
+                  ActionExtensionID = "Xcode.BreakpointAction.DebuggerCommand">
+                  <ActionContent
+                     consoleCommand = "">
+                  </ActionContent>
+               </BreakpointActionProxy>
+            </Actions>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            symbolName = ""
+            moduleName = "">
+            <Actions>
+               <BreakpointActionProxy
+                  ActionExtensionID = "Xcode.BreakpointAction.DebuggerCommand">
+                  <ActionContent
+                     consoleCommand = "">
+                  </ActionContent>
+               </BreakpointActionProxy>
+            </Actions>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LiveCourse/Model/Net/UpdateAppNet.m"
+            timestampString = "451474189.584854"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "23"
+            endingLineNumber = "23"
+            landmarkName = "-checkAppUpdateInfoCompletion:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[UpdateAppNet checkAppUpdateInfoCompletion:]"
+                  moduleName = "Hello Daily"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/MovingZone/%E9%A1%B9%E7%9B%AE/LiveCourse/LiveCourse/Model/Net/UpdateAppNet.m"
+                  timestampString = "452749881.364607"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "23"
+                  endingLineNumber = "23"
+                  offsetFromSymbolStart = "190">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__45-[UpdateAppNet checkAppUpdateInfoCompletion:]_block_invoke"
+                  moduleName = "Hello Daily"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/MovingZone/%E9%A1%B9%E7%9B%AE/LiveCourse/LiveCourse/Model/Net/UpdateAppNet.m"
+                  timestampString = "452749881.364764"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "27"
+                  endingLineNumber = "27"
+                  offsetFromSymbolStart = "28">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LiveCourse/Model/Net/UpdateAppNet.m"
+            timestampString = "451474190.966118"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
+            landmarkName = "-checkAppUpdateInfoCompletion:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LiveCourse/Model/Net/CheckPointNet.m"
+            timestampString = "451967523.304315"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "417"
+            endingLineNumber = "417"
+            landmarkName = "-requestCheckPointLessonTextDataWithUserID:checkPointID:Completion:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[CheckPointNet requestCheckPointLessonTextDataWithUserID:checkPointID:Completion:]"
+                  moduleName = "Hello Daily"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/MovingZone/%E9%A1%B9%E7%9B%AE/LiveCourse/LiveCourse/Model/Net/CheckPointNet.m"
+                  timestampString = "452749881.367278"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "417"
+                  endingLineNumber = "417"
+                  offsetFromSymbolStart = "178">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__83-[CheckPointNet requestCheckPointLessonTextDataWithUserID:checkPointID:Completion:]_block_invoke"
+                  moduleName = "Hello Daily"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/MovingZone/%E9%A1%B9%E7%9B%AE/LiveCourse/LiveCourse/Model/Net/CheckPointNet.m"
+                  timestampString = "452749881.367409"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "421"
+                  endingLineNumber = "421"
+                  offsetFromSymbolStart = "28">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LiveCourse/Model/HSCheckPointHandle.m"
+            timestampString = "452749344.488864"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "74"
+            endingLineNumber = "74"
+            landmarkName = "+requestCheckPointContentDataWithView:net:checkPoint:completion:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "+[HSCheckPointHandle requestCheckPointContentDataWithView:net:checkPoint:completion:]"
+                  moduleName = "Hello Daily"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/MovingZone/%E9%A1%B9%E7%9B%AE/LiveCourse/LiveCourse/Model/HSCheckPointHandle.m"
+                  timestampString = "452749881.36809"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "74"
+                  endingLineNumber = "74"
+                  offsetFromSymbolStart = "1044">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__85+[HSCheckPointHandle requestCheckPointContentDataWithView:net:checkPoint:completion:]_block_invoke"
+                  moduleName = "Hello Daily"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/MovingZone/%E9%A1%B9%E7%9B%AE/LiveCourse/LiveCourse/Model/HSCheckPointHandle.m"
+                  timestampString = "452749881.36823"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "75"
+                  endingLineNumber = "75"
+                  offsetFromSymbolStart = "12">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LiveCourse/Model/HSCheckPointHandle.m"
+            timestampString = "452749348.901158"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "75"
+            endingLineNumber = "75"
+            landmarkName = "+requestCheckPointContentDataWithView:net:checkPoint:completion:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LiveCourse/Model/HSCheckPointHandle.m"
+            timestampString = "452749351.017088"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "106"
+            endingLineNumber = "106"
+            landmarkName = "+requestCheckPointContentDataWithView:net:checkPoint:completion:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LiveCourse/Model/HSCheckPointHandle.m"
+            timestampString = "452749357.630719"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "126"
+            endingLineNumber = "126"
+            landmarkName = "+requestCheckPointContentDataWithView:net:checkPoint:completion:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "+[HSCheckPointHandle requestCheckPointContentDataWithView:net:checkPoint:completion:]"
+                  moduleName = "Hello Daily"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/MovingZone/%E9%A1%B9%E7%9B%AE/LiveCourse/LiveCourse/Model/HSCheckPointHandle.m"
+                  timestampString = "452749881.370114"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "126"
+                  endingLineNumber = "126"
+                  offsetFromSymbolStart = "1694">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__85+[HSCheckPointHandle requestCheckPointContentDataWithView:net:checkPoint:completion:]_block_invoke218"
+                  moduleName = "Hello Daily"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/MovingZone/%E9%A1%B9%E7%9B%AE/LiveCourse/LiveCourse/Model/HSCheckPointHandle.m"
+                  timestampString = "452749881.370264"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "128"
+                  endingLineNumber = "128"
+                  offsetFromSymbolStart = "10">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LiveCourse/Model/Net/CheckPointNet.m"
+            timestampString = "452749379.742939"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "502"
+            endingLineNumber = "502"
+            landmarkName = "-requestCheckPointContentDataWithUserID:checkPointID:checkPointType:completion:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
